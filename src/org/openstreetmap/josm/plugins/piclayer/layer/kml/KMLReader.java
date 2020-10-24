@@ -18,6 +18,7 @@ public class KMLReader {
     private List<KMLGroundOverlay> groundOverlays;
 
     private File file;
+
     public KMLReader(File file) {
         this.file = file;
     }

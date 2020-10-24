@@ -18,7 +18,7 @@ import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
 
 /**
  * Action for resetting properties of an image.
- *
+ * <p>
  * TODO Four almost identical classes. Refactoring needed.
  */
 public class SavePictureCalibrationAction extends JosmAction {
@@ -28,6 +28,7 @@ public class SavePictureCalibrationAction extends JosmAction {
 
     /**
      * Constructor
+     *
      * @param owner Owner layer of the action
      */
     public SavePictureCalibrationAction(PicLayerAbstract owner) {
@@ -53,7 +54,7 @@ public class SavePictureCalibrationAction extends JosmAction {
             File file = fc.getSelectedFile();
             String path = file.getAbsolutePath();
             if (path.length() < CalibrationFileFilter.EXTENSION.length()
-                || !path.substring(path.length() - 4).equals(CalibrationFileFilter.EXTENSION)) {
+                    || !path.substring(path.length() - 4).equals(CalibrationFileFilter.EXTENSION)) {
                 file = new File(path + CalibrationFileFilter.EXTENSION);
             }
 

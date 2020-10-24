@@ -43,7 +43,7 @@ public class MovePointAction extends GenericPicTransformAction {
             return;
 
         try {
-        	setLatLonOriginPoints(e.getPoint());	// collect lat/lon data points for auto calibration
+            setLatLonOriginPoints(e.getPoint());    // collect lat/lon data points for auto calibration
 
             Point2D pressed = currentLayer.transformPoint(e.getPoint());
             if (selectedPoint == null)
@@ -70,12 +70,13 @@ public class MovePointAction extends GenericPicTransformAction {
     /**
      * Method to collect raw data points for additional auto calibration and transforms them into LatLon.
      * Transformed points will be stored into {@code PictureTransform } attribute to make them accessible for actions.
+     *
      * @param point to collect
      */
     private void setLatLonOriginPoints(Point2D point) {
-    	LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(point.getX(), point.getY());
-    	double latY = latLonPoint.getY();
-    	double lonX = latLonPoint.getX();
+        LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(point.getX(), point.getY());
+        double latY = latLonPoint.getY();
+        double lonX = latLonPoint.getX();
         currentLayer.getTransformer().addLatLonOriginPoint(new Point2D.Double(lonX, latY));
     }
 

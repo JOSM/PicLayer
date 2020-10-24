@@ -88,7 +88,7 @@ public class PicLayerFromFile extends PicLayerAbstract {
         }
     }
 
-    public enum CalibrationType { CAL, WORLDFILE }
+    public enum CalibrationType {CAL, WORLDFILE}
 
     public static class CalData {
         public String[] imgExt;
@@ -106,17 +106,17 @@ public class PicLayerFromFile extends PicLayerAbstract {
     protected void lookForCalibration() throws IOException {
         // Manage a potential existing calibration file
 
-        String[][] imgExtensions = new String[][] {
-            {".jpg", ".jpeg"},
-            {".png"},
-            {".tif", ".tiff"},
-            {".bmp"},
+        String[][] imgExtensions = new String[][]{
+                {".jpg", ".jpeg"},
+                {".png"},
+                {".tif", ".tiff"},
+                {".bmp"},
         };
-        String[][] wldExtensions = new String[][] {
-            {".wld", ".jgw", ".jpgw"},
-            {".wld", ".pgw", ".pngw"},
-            {".wld", ".tfw", ".tifw"},
-            {".wld", ".bmpw", ".bpw"},
+        String[][] wldExtensions = new String[][]{
+                {".wld", ".jgw", ".jpgw"},
+                {".wld", ".pgw", ".pngw"},
+                {".wld", ".tfw", ".tifw"},
+                {".wld", ".bmpw", ".bpw"},
         };
 
         if (isZip) {
@@ -137,7 +137,7 @@ public class PicLayerFromFile extends PicLayerAbstract {
                     for (int i = 0; i < imgExtensions.length; ++i) {
                         if (Arrays.asList(imgExtensions[i]).contains(extension.toLowerCase())) {
                             for (String wldExtension : wldExtensions[i]) {
-                                String wldName = namepart+wldExtension;
+                                String wldName = namepart + wldExtension;
                                 ZipEntry wldEntry = zipFile.getEntry(wldName);
                                 if (wldEntry != null) {
                                     if (confirmCalibrationLoading(wldName)) {
@@ -168,7 +168,7 @@ public class PicLayerFromFile extends PicLayerAbstract {
                 for (int i = 0; i < imgExtensions.length; ++i) {
                     if (Arrays.asList(imgExtensions[i]).contains(extension.toLowerCase())) {
                         for (String wldExtension : wldExtensions[i]) {
-                            File wldFile = new File(m_file.getParentFile(), namepart+wldExtension);
+                            File wldFile = new File(m_file.getParentFile(), namepart + wldExtension);
                             if (wldFile.exists()) {
                                 loadWorldfile(new FileInputStream(wldFile));
                                 return;
@@ -192,8 +192,8 @@ public class PicLayerFromFile extends PicLayerAbstract {
         } else if (policy.equals("no")) {
             loadcal = false;
         } else if (policy.equals("ask")) {
-            msg += "\n" + tr("Set \"{0}\" to yes/no/ask in the preferences\n"+
-                            "to control the autoloading of calibration files.", prefkey);
+            msg += "\n" + tr("Set \"{0}\" to yes/no/ask in the preferences\n" +
+                    "to control the autoloading of calibration files.", prefkey);
             msg += "\n" + tr("Do you want to apply it ?");
             int answer = JOptionPane.showConfirmDialog(MainApplication.getMainFrame(), msg, tr("Load calibration file?"), JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
@@ -202,11 +202,11 @@ public class PicLayerFromFile extends PicLayerAbstract {
         } else {
             msg += "\n" + tr("It will be applied automatically.");
             msg += "\n" + tr("Also, from now on, calibration files will always be loaded automatically.");
-            msg += "\n" + tr("Set \"{0}\" to yes/no/ask in the preferences\n"+
-                            "to control the autoloading of calibration files.", prefkey);
+            msg += "\n" + tr("Set \"{0}\" to yes/no/ask in the preferences\n" +
+                    "to control the autoloading of calibration files.", prefkey);
             // TODO: there should be here a yes/no dialog with a checkbox "do not ask again"
             JOptionPane.showMessageDialog(MainApplication.getMainFrame(), msg,
-                "Automatic loading of the calibration", JOptionPane.INFORMATION_MESSAGE);
+                    "Automatic loading of the calibration", JOptionPane.INFORMATION_MESSAGE);
             Config.getPref().put(prefkey, "yes");
             loadcal = true;
         }
@@ -220,13 +220,14 @@ public class PicLayerFromFile extends PicLayerAbstract {
 
     /**
      * Get the file extension
+     *
      * @param f the file
      * @return everything after the last '.'
-     *         the empty string, if there is no extension
+     * the empty string, if there is no extension
      */
     public static String getFileExtension(File f) {
         int dotIdx = f.getName().lastIndexOf('.');
         if (dotIdx == -1) return "";
-        return f.getName().substring(dotIdx+1);
+        return f.getName().substring(dotIdx + 1);
     }
 }

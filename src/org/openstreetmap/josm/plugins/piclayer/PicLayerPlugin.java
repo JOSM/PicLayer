@@ -58,6 +58,7 @@ public class PicLayerPlugin extends Plugin implements LayerChangeListener, Activ
 
     /**
      * Constructor.
+     *
      * @param info plugin info
      */
     public PicLayerPlugin(PluginInformation info) {

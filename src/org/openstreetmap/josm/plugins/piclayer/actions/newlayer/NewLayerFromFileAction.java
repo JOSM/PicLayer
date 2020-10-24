@@ -58,7 +58,7 @@ public class NewLayerFromFileAction extends JosmAction {
 
             // Unfortunately, getReaderFormatNames does not always return ALL extensions in
             // both lower and upper case, so we can not do a search in the array
-            for (String e: supportedExtensions) {
+            for (String e : supportedExtensions) {
                 if (e.equalsIgnoreCase(fileExtension)) {
                     return true;
                 }
@@ -114,9 +114,9 @@ public class NewLayerFromFileAction extends JosmAction {
                 if ("kml".equalsIgnoreCase(PicLayerFromFile.getFileExtension(file))) {
                     KMLReader kml = new KMLReader(file);
                     kml.process();
-                    JOptionPane.showMessageDialog(null, tr("KML calibration is in beta stage and may produce incorrectly calibrated layers!\n"+
-                    "Please use {0} to upload your KMLs that were calibrated incorrectly.",
-                    "https://josm.openstreetmap.de/ticket/5451"), tr("Notification"), JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, tr("KML calibration is in beta stage and may produce incorrectly calibrated layers!\n" +
+                                    "Please use {0} to upload your KMLs that were calibrated incorrectly.",
+                            "https://josm.openstreetmap.de/ticket/5451"), tr("Notification"), JOptionPane.INFORMATION_MESSAGE);
                     for (KMLGroundOverlay overlay : kml.getGroundOverlays()) {
                         //TODO: zoom to whole picture, not only the last
                         addNewLayerFromKML(file, overlay, newLayerPos);

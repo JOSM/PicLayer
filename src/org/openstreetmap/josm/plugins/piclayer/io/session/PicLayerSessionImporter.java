@@ -33,12 +33,12 @@ import org.w3c.dom.NodeList;
 /**
  * Session importer for PicLayer.
  * Code copied and adjusted from JOSM GeoImageSessionImporter-class!
- * @author rebsc
  *
+ * @author rebsc
  */
-public class PicLayerSessionImporter implements SessionLayerImporter{
+public class PicLayerSessionImporter implements SessionLayerImporter {
 
-	@Override
+    @Override
     public Layer load(Element elem, SessionReader.ImportSupport support, ProgressMonitor progressMonitor)
             throws IOException, IllegalDataException {
         String version = elem.getAttribute("version");
@@ -73,19 +73,18 @@ public class PicLayerSessionImporter implements SessionLayerImporter{
         PicLayerAbstract layer = null;
 
         File file = entries.get(0).getFile();
-        if(file.getAbsolutePath().contains("kml") || file.getAbsolutePath().contains("KML")) {
-        	KMLReader kml = new KMLReader(file);
+        if (file.getAbsolutePath().contains("kml") || file.getAbsolutePath().contains("KML")) {
+            KMLReader kml = new KMLReader(file);
             kml.process();
-            JOptionPane.showMessageDialog(null, tr("KML calibration is in beta stage and may produce incorrectly calibrated layers!\n"+
-            "Please use {0} to upload your KMLs that were calibrated incorrectly.",
-            "https://josm.openstreetmap.de/ticket/5451"), tr("Notification"), JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, tr("KML calibration is in beta stage and may produce incorrectly calibrated layers!\n" +
+                            "Please use {0} to upload your KMLs that were calibrated incorrectly.",
+                    "https://josm.openstreetmap.de/ticket/5451"), tr("Notification"), JOptionPane.INFORMATION_MESSAGE);
             List<KMLGroundOverlay> overlays = kml.getGroundOverlays();
-            if(!overlays.isEmpty()) {
-            	layer = new PicLayerFromKML(file, overlays.get(0));
+            if (!overlays.isEmpty()) {
+                layer = new PicLayerFromKML(file, overlays.get(0));
                 layer.initialize();
             }
-        }
-        else {
+        } else {
             layer = new PicLayerFromFile(file);
             layer.initialize();
         }
@@ -97,16 +96,16 @@ public class PicLayerSessionImporter implements SessionLayerImporter{
 
     private static void handleElement(GpxImageEntry entry, Element attrElem) {
         try {
-            switch(attrElem.getTagName()) {
-            case "file":
-                entry.setFile(new File(attrElem.getTextContent()));
-                break;
-            case "position":
-                double lat = Double.parseDouble(attrElem.getAttribute("lat"));
-                double lon = Double.parseDouble(attrElem.getAttribute("lon"));
-                entry.setPos(new LatLon(lat, lon));
-                break;
-            default: // Do nothing
+            switch (attrElem.getTagName()) {
+                case "file":
+                    entry.setFile(new File(attrElem.getTextContent()));
+                    break;
+                case "position":
+                    double lat = Double.parseDouble(attrElem.getAttribute("lat"));
+                    double lon = Double.parseDouble(attrElem.getAttribute("lon"));
+                    entry.setPos(new LatLon(lat, lon));
+                    break;
+                default: // Do nothing
             }
             // TODO: handle thumbnail loading
         } catch (NumberFormatException e) {

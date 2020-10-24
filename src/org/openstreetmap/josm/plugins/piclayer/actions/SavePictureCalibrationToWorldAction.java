@@ -42,7 +42,7 @@ public class SavePictureCalibrationToWorldAction extends JosmAction {
         String ext = null;
         int dotPos = picFilename.lastIndexOf(".");
         if (dotPos > 0) {
-            ext = picFilename.substring(dotPos+1);
+            ext = picFilename.substring(dotPos + 1);
             picFilenameNoext = picFilename.substring(0, dotPos);
         }
         String wext;
@@ -50,13 +50,26 @@ public class SavePictureCalibrationToWorldAction extends JosmAction {
             wext = picFilenameNoext + ".wld";
         } else {
             switch (ext) {
-                case "jpg": wext = "jgw"; break;
-                case "jpeg": wext = "jpgw"; break;
-                case "png": wext = "pgw"; break;
-                case "bmp": wext = "bpw"; break;
-                case "tif": wext = "tfw"; break;
-                case "tiff": wext = "tifw"; break;
-                default: wext = "wld";
+                case "jpg":
+                    wext = "jgw";
+                    break;
+                case "jpeg":
+                    wext = "jpgw";
+                    break;
+                case "png":
+                    wext = "pgw";
+                    break;
+                case "bmp":
+                    wext = "bpw";
+                    break;
+                case "tif":
+                    wext = "tfw";
+                    break;
+                case "tiff":
+                    wext = "tifw";
+                    break;
+                default:
+                    wext = "wld";
             }
         }
 

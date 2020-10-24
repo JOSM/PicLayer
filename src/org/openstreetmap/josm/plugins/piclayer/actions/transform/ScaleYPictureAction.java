@@ -24,7 +24,7 @@ public class ScaleYPictureAction extends GenericPicTransformAction {
 
     @Override
     protected void doAction(MouseEvent e) {
-        double centerY = MainApplication.getMap().mapView.getHeight()/2;
+        double centerY = MainApplication.getMap().mapView.getHeight() / 2;
         double dy0 = Math.max(Math.abs(prevMousePoint.getY() - centerY), 10);
         double dy = Math.abs(e.getY() - centerY);
         double scaleY = Math.max(dy / dy0, 0.9);

@@ -31,7 +31,7 @@ public class TransformCommand extends Command {
 
     @Override
     public void fillModifiedData(Collection<OsmPrimitive> modified,
-            Collection<OsmPrimitive> deleted, Collection<OsmPrimitive> added) {
+                                 Collection<OsmPrimitive> deleted, Collection<OsmPrimitive> added) {
     }
 
     @Override
@@ -72,13 +72,14 @@ public class TransformCommand extends Command {
     }
 
     private boolean alreadyAdded = false;
+
     public void addIfChanged() {
 
         afterTransform = extractTransform();
 
         boolean changed = !beforeTransform.getTransform().equals(afterTransform.getTransform()) ||
-            !beforeTransform.getOriginPoints().equals(afterTransform.getOriginPoints()) ||
-            !beforeTransform.getImagePosition().equals(afterTransform.getImagePosition());
+                !beforeTransform.getOriginPoints().equals(afterTransform.getOriginPoints()) ||
+                !beforeTransform.getImagePosition().equals(afterTransform.getImagePosition());
         if (changed && !alreadyAdded) {
             UndoRedoHandler.getInstance().add(this);
             alreadyAdded = true;

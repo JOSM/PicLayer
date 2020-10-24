@@ -9,15 +9,24 @@ class Matrix3D {
     double[][] a;
 
     Matrix3D() {
-        a = new double[3][]; a[0] = new double[3]; a[1] = new double[3]; a[2] = new double[3];
+        a = new double[3][];
+        a[0] = new double[3];
+        a[1] = new double[3];
+        a[2] = new double[3];
     }
 
     Matrix3D(PictureTransform pictureTransform, double b11, double b12, double b13, double b21, double b22, double b23, double b31, double b32, double b33) {
         this();
 
-        a[0][0] = b11; a[0][1] = b12; a[0][2] = b13;
-        a[1][0] = b21; a[1][1] = b22; a[1][2] = b23;
-        a[2][0] = b31; a[2][1] = b32; a[2][2] = b33;
+        a[0][0] = b11;
+        a[0][1] = b12;
+        a[0][2] = b13;
+        a[1][0] = b21;
+        a[1][1] = b22;
+        a[1][2] = b23;
+        a[2][0] = b31;
+        a[2][1] = b32;
+        a[2][2] = b33;
     }
 
     Matrix3D(List<? extends Point2D> list) {
@@ -37,7 +46,7 @@ class Matrix3D {
             for (int j = 0; j < 3; j++) {
                 double sum = 0;
                 for (int k = 0; k < 3; k++) {
-                    sum += a[i][k]*m.a[k][j];
+                    sum += a[i][k] * m.a[k][j];
                 }
                 result.a[i][j] = sum;
             }
@@ -46,8 +55,8 @@ class Matrix3D {
     }
 
     private double determinant() {
-        return a[0][0]*(a[1][1]*a[2][2]-a[1][2]*a[2][1])-a[0][1]*(a[1][0]*a[2][2]-a[1][2]*a[2][0])
-               +a[0][2]*(a[1][0]*a[2][1]-a[1][1]*a[2][0]);
+        return a[0][0] * (a[1][1] * a[2][2] - a[1][2] * a[2][1]) - a[0][1] * (a[1][0] * a[2][2] - a[1][2] * a[2][0])
+                + a[0][2] * (a[1][0] * a[2][1] - a[1][1] * a[2][0]);
     }
 
     public Matrix3D inverse() throws NoSolutionException {
@@ -56,7 +65,7 @@ class Matrix3D {
         if (Math.abs(det) <= Double.MIN_VALUE)
             throw new NoSolutionException("Determinant = 0");
 
-        double s = 1/det;
+        double s = 1 / det;
 
         invert.a[0][0] = s * (a[1][1] * a[2][2] - a[1][2] * a[2][1]);
         invert.a[1][0] = s * (a[1][2] * a[2][0] - a[1][0] * a[2][2]);
@@ -72,7 +81,7 @@ class Matrix3D {
     }
 
     public AffineTransform toAffineTransform() throws NoSolutionException {
-        if (!(Math.abs(a[2][0]) <= 1e-2 && Math.abs(a[2][1]) <= 1e-2 && Math.abs(a[2][2]-1) <= 1e-2))
+        if (!(Math.abs(a[2][0]) <= 1e-2 && Math.abs(a[2][1]) <= 1e-2 && Math.abs(a[2][2] - 1) <= 1e-2))
             throw new NoSolutionException("Resulted matrix is not AF");
         return new AffineTransform(a[0][0], a[1][0], a[0][1], a[1][1], a[0][2], a[1][2]);
     }

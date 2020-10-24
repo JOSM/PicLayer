@@ -60,7 +60,7 @@ public class PictureTransform {
      * solves equation,
      * applies transform matrix to the existing cachedTransform
      *
-     * @param originPoint - should be one of origin points, otherwise - no transform applied
+     * @param originPoint  - should be one of origin points, otherwise - no transform applied
      * @param desiredPoint - new place for the point
      */
     public void updatePair(Point2D originPoint, Point2D desiredPoint) {
@@ -68,45 +68,47 @@ public class PictureTransform {
             return;
 
         switch (originPoints.size()) {
-        case 1: {
-            cachedTransform.concatenate(AffineTransform.getTranslateInstance(desiredPoint.getX()-originPoint.getX(),
-                    desiredPoint.getY()-originPoint.getY()));
-            break;
-        }
-        case 2: {
-            // find triangle and move it
-            List<Point2D> desiredPoints = new ArrayList<>(3);
-            Point2D o1 = originPoints.get(0);
-            Point2D o2 = originPoints.get(1);
-            Point2D d1, d2;
-            if (o2 == originPoint) {
-                d2 = desiredPoint;
-                d1 = (Point2D) o1.clone();
-            } else {
-                d1 = desiredPoint;
-                d2 = (Point2D) o2.clone();
+            case 1: {
+                cachedTransform.concatenate(AffineTransform.getTranslateInstance(desiredPoint.getX() - originPoint.getX(),
+                        desiredPoint.getY() - originPoint.getY()));
+                break;
             }
-            Point2D o3 = calculateTrianglePoint(o1, o2);
-            Point2D d3 = calculateTrianglePoint(d1, d2);
-            originPoints.add(o3);
-            desiredPoints.add(d1); desiredPoints.add(d2); desiredPoints.add(d3);
-            trySolve(desiredPoints);
-            originPoints.remove(2);
-            break;
-        }
-        case 3: {
-            List<Point2D> desiredPoints = new ArrayList<>(3);
+            case 2: {
+                // find triangle and move it
+                List<Point2D> desiredPoints = new ArrayList<>(3);
+                Point2D o1 = originPoints.get(0);
+                Point2D o2 = originPoints.get(1);
+                Point2D d1, d2;
+                if (o2 == originPoint) {
+                    d2 = desiredPoint;
+                    d1 = (Point2D) o1.clone();
+                } else {
+                    d1 = desiredPoint;
+                    d2 = (Point2D) o2.clone();
+                }
+                Point2D o3 = calculateTrianglePoint(o1, o2);
+                Point2D d3 = calculateTrianglePoint(d1, d2);
+                originPoints.add(o3);
+                desiredPoints.add(d1);
+                desiredPoints.add(d2);
+                desiredPoints.add(d3);
+                trySolve(desiredPoints);
+                originPoints.remove(2);
+                break;
+            }
+            case 3: {
+                List<Point2D> desiredPoints = new ArrayList<>(3);
 
-            for (Point2D origin : originPoints) {
-                if (origin.equals(originPoint))
-                    desiredPoints.add(desiredPoint);
-                else
-                    desiredPoints.add(origin);
+                for (Point2D origin : originPoints) {
+                    if (origin.equals(originPoint))
+                        desiredPoints.add(desiredPoint);
+                    else
+                        desiredPoints.add(origin);
+                }
+                trySolve(desiredPoints);
+                break;
             }
-            trySolve(desiredPoints);
-            break;
-        }
-        default:
+            default:
 
         }
 
@@ -119,7 +121,7 @@ public class PictureTransform {
         } else {
             result = new Point2D.Float();
         }
-        result.setLocation((d1.getX()+d2.getX()-d2.getY()+d1.getY())/2, (d1.getY()+d2.getY()+d2.getX()-d1.getX())/2);
+        result.setLocation((d1.getX() + d2.getX() - d2.getY() + d1.getY()) / 2, (d1.getY() + d2.getY() + d2.getX() - d1.getX()) / 2);
         return result;
     }
 
@@ -187,11 +189,11 @@ public class PictureTransform {
     }
 
     public void setOriginPoints(List<Point2D> list) {
-    	if(originPoints == null)	originPoints = new ArrayList<>(list);
-    	else {
-    		originPoints.clear();
-    		originPoints.addAll(list);
-    	}
+        if (originPoints == null) originPoints = new ArrayList<>(list);
+        else {
+            originPoints.clear();
+            originPoints.addAll(list);
+        }
     }
 
     public void removeOriginPoint(Point2D selectedPoint) {
@@ -199,35 +201,35 @@ public class PictureTransform {
     }
 
     public void clearOriginPoints() {
-    	originPoints.clear();
+        originPoints.clear();
     }
 
     // similar to originPointList - points scaled in LatLon, list observable
     private ObservableArrayList<Point2D> latLonOriginPoints = new ObservableArrayList<>(3);
 
     public ObservableArrayList<Point2D> getLatLonOriginPoints() {
-    	return this.latLonOriginPoints;
+        return this.latLonOriginPoints;
     }
 
     public void addLatLonOriginPoint(Point2D p) {
-    	latLonOriginPoints.add(p);
+        latLonOriginPoints.add(p);
     }
 
     public void removeLatLonOriginPoint(Point2D selectedPoint) {
-    	int index = originPoints.indexOf(selectedPoint);
-    	Point2D toDelete = this.latLonOriginPoints.get(index);
-    	this.latLonOriginPoints.remove(toDelete);
+        int index = originPoints.indexOf(selectedPoint);
+        Point2D toDelete = this.latLonOriginPoints.get(index);
+        this.latLonOriginPoints.remove(toDelete);
     }
 
     public void setLatLonOriginPoint(List<Point2D> list) {
-    	if(latLonOriginPoints == null)	latLonOriginPoints = new ObservableArrayList<>(list);
-    	else {
-    		latLonOriginPoints.clear();
-    		latLonOriginPoints.addAll(list);
-    	}
+        if (latLonOriginPoints == null) latLonOriginPoints = new ObservableArrayList<>(list);
+        else {
+            latLonOriginPoints.clear();
+            latLonOriginPoints.addAll(list);
+        }
     }
 
     public void clearLatLonOriginPoints() {
-    	latLonOriginPoints.clear();
+        latLonOriginPoints.clear();
     }
 }

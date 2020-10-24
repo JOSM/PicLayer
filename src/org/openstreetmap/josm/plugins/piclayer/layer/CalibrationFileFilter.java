@@ -25,6 +25,6 @@ public class CalibrationFileFilter extends FileFilter {
 
     @Override
     public String getDescription() {
-        return tr("Calibration Files")+ " (*" + EXTENSION + ")";
+        return tr("Calibration Files") + " (*" + EXTENSION + ")";
     }
 }

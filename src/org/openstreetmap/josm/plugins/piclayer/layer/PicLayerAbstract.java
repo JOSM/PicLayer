@@ -91,25 +91,25 @@ public abstract class PicLayerAbstract extends Layer {
         drawOriginMarkers = value;
     }
 
-    private List<Point2D> refPointsBuffer = new ArrayList<>(3);	// only for buffering
+    private List<Point2D> refPointsBuffer = new ArrayList<>(3);    // only for buffering
 
     public void setDrawReferencePoints(boolean value, Point2D pointToDraw) {
         drawRefMarkers = value;
-        if(this.refPointsBuffer == null)	refPointsBuffer = new ArrayList<>(3);
-        if(pointToDraw != null)				this.refPointsBuffer.add(pointToDraw);
+        if (this.refPointsBuffer == null) refPointsBuffer = new ArrayList<>(3);
+        if (pointToDraw != null) this.refPointsBuffer.add(pointToDraw);
     }
 
     public void clearDrawReferencePoints() {
-    	drawRefMarkers = false;
-    	this.refPointsBuffer = null;
+        drawRefMarkers = false;
+        this.refPointsBuffer = null;
     }
 
     public void setDrawFirstLine(boolean value) {
-    	drawFirstLine = value;
+        drawFirstLine = value;
     }
 
     public void setDrawSecLine(boolean value) {
-    	drawSecLine = value;
+        drawSecLine = value;
     }
 
     protected PictureTransform transformer;
@@ -170,12 +170,13 @@ public abstract class PicLayerAbstract extends Layer {
     /**
      * Initializes the image. Gets the image from a subclass and stores some
      * initial parameters. Throws exception if something fails.
+     *
      * @throws IOException in case of error
      */
     public void initialize() throws IOException {
         // First, we initialize the calibration, so that createImage() can rely on it
 
-    	  if(transformer == null)		transformer = new PictureTransform();
+        if (transformer == null) transformer = new PictureTransform();
 
         // If the map does not exist - we're screwed. We should not get into this situation in the first place!
         if (MainApplication.getMap() != null && MainApplication.getMap().mapView != null) {
@@ -203,8 +204,9 @@ public abstract class PicLayerAbstract extends Layer {
     /**
      * To be overridden by subclasses. Provides an image from an external sources.
      * Throws exception if something does not work.
-     *
+     * <p>
      * TODO: Replace the IOException by our own exception.
+     *
      * @return created image
      * @throws IOException in case of error
      */
@@ -214,12 +216,13 @@ public abstract class PicLayerAbstract extends Layer {
 
     /**
      * To be overridden by subclasses. Returns the user readable name of the layer.
+     *
      * @return the user readable name of the layer
      */
     public abstract String getPicLayerName();
 
     public Image getImage() {
-    	return this.image;
+        return this.image;
     }
 
     @Override
@@ -235,7 +238,7 @@ public abstract class PicLayerAbstract extends Layer {
     @Override
     public Action[] getMenuEntries() {
         // Main menu
-        return new Action[] {
+        return new Action[]{
                 new ResetCalibrationAction(this, transformer),
                 SeparatorLayerAction.INSTANCE,
                 new SavePictureCalibrationAction(this),
@@ -253,10 +256,10 @@ public abstract class PicLayerAbstract extends Layer {
         return getPicLayerName();
     }
 
-    public List<ImageEntry> getImages(){
-    	List<ImageEntry> list = new ArrayList<>();
-    	list.add(new ImageEntry(imageFile));
-    	return list;
+    public List<ImageEntry> getImages() {
+        List<ImageEntry> list = new ArrayList<>();
+        list.add(new ImageEntry(imageFile));
+        return list;
     }
 
     @Override
@@ -265,7 +268,8 @@ public abstract class PicLayerAbstract extends Layer {
     }
 
     @Override
-    public void mergeFrom(Layer arg0) {}
+    public void mergeFrom(Layer arg0) {
+    }
 
     @Override
     public void paint(Graphics2D g2, MapView mv, Bounds bounds) {
@@ -310,10 +314,10 @@ public abstract class PicLayerAbstract extends Layer {
             if (mv.getLayerManager().getActiveLayer() == this) {
                 g.setColor(new Color(0xFF0000));
                 g.drawRect(
-                    -width / 2,
-                    -height / 2,
-                    width,
-                    height
+                        -width / 2,
+                        -height / 2,
+                        width,
+                        height
                 );
             }
             if (drawOriginMarkers) {
@@ -328,13 +332,13 @@ public abstract class PicLayerAbstract extends Layer {
                 tr.concatenate(transformer.getTransform());
 
                 for (int i = 0; i < transformer.getOriginPoints().size(); i++) {
-                   Point2D trP = tr.transform(transformer.getOriginPoints().get(i), null);
-                   int x = (int) trP.getX(), y = (int) trP.getY();
+                    Point2D trP = tr.transform(transformer.getOriginPoints().get(i), null);
+                    int x = (int) trP.getX(), y = (int) trP.getY();
 
-                   int dstx = x-pinAnchorX;
-                   int dsty = y-pinAnchorY;
-                   gPoints.drawImage(pinTiledImage, dstx, dsty, dstx+pinWidth, dsty+pinHeight,
-                           pinTileOffsetX[i], pinTileOffsetY[i], pinTileOffsetX[i]+pinWidth, pinTileOffsetY[i]+pinHeight, null);
+                    int dstx = x - pinAnchorX;
+                    int dsty = y - pinAnchorY;
+                    gPoints.drawImage(pinTiledImage, dstx, dsty, dstx + pinWidth, dsty + pinHeight,
+                            pinTileOffsetX[i], pinTileOffsetY[i], pinTileOffsetX[i] + pinWidth, pinTileOffsetY[i] + pinHeight, null);
                 }
             }
             if (drawRefMarkers) {
@@ -349,32 +353,32 @@ public abstract class PicLayerAbstract extends Layer {
                 tr.concatenate(transformer.getTransform());
 
                 for (int i = 0; i < refPointsBuffer.size(); i++) {
-                   Point2D trP = tr.transform(refPointsBuffer.get(i), null);
-                   int x = (int) trP.getX(), y = (int) trP.getY();
+                    Point2D trP = tr.transform(refPointsBuffer.get(i), null);
+                    int x = (int) trP.getX(), y = (int) trP.getY();
 
-                   int dstx = x-pinAnchorX;
-                   int dsty = y-pinAnchorY;
-                   gPoints.drawImage(pinTiledImageOrange, dstx, dsty, dstx+pinWidth, dsty+pinHeight,
-                           pinTileOffsetX[i], pinTileOffsetY[i], pinTileOffsetX[i]+pinWidth, pinTileOffsetY[i]+pinHeight, null);
+                    int dstx = x - pinAnchorX;
+                    int dsty = y - pinAnchorY;
+                    gPoints.drawImage(pinTiledImageOrange, dstx, dsty, dstx + pinWidth, dsty + pinHeight,
+                            pinTileOffsetX[i], pinTileOffsetY[i], pinTileOffsetX[i] + pinWidth, pinTileOffsetY[i] + pinHeight, null);
                 }
             }
             if (drawFirstLine) {
-            	// set line from point1 to point2
-            	List<Point2D> points = this.getTransformer().getOriginPoints();
-            	Point2D p1 = points.get(0);
-            	Point2D p2 = points.get(1);
-            	g.setColor(Color.green);
-            	g.setStroke(new BasicStroke(5));
-                g.drawLine((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
+                // set line from point1 to point2
+                List<Point2D> points = this.getTransformer().getOriginPoints();
+                Point2D p1 = points.get(0);
+                Point2D p2 = points.get(1);
+                g.setColor(Color.green);
+                g.setStroke(new BasicStroke(5));
+                g.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
             }
             if (drawSecLine) {
-            	// set line from point2 to point3
-            	List<Point2D> points = this.getTransformer().getOriginPoints();
-            	Point2D p2 = points.get(1);
-            	Point2D p3 = points.get(2);
-            	g.setColor(Color.green);
-            	g.setStroke(new BasicStroke(5));
-                g.drawLine((int)p2.getX(), (int)p2.getY(), (int)p3.getX(), (int)p3.getY());
+                // set line from point2 to point3
+                List<Point2D> points = this.getTransformer().getOriginPoints();
+                Point2D p2 = points.get(1);
+                Point2D p3 = points.get(2);
+                g.setColor(Color.green);
+                g.setStroke(new BasicStroke(5));
+                g.drawLine((int) p2.getX(), (int) p2.getY(), (int) p3.getX(), (int) p3.getY());
             }
         } else {
             Logging.error("PicLayerAbstract::paint - general drawing error (image is null or Graphics not 2D");
@@ -385,6 +389,7 @@ public abstract class PicLayerAbstract extends Layer {
      * Returns the distance in meter, that corresponds to one unit in east north space.
      * For normal projections, it is about 1 (but usually changing with latitude).
      * For EPSG:4326, it is the distance from one meridian of full degree to the next (a couple of kilometers).
+     *
      * @param en east/north
      * @return the distance in meter, that corresponds to one unit in east north space
      */
@@ -415,7 +420,7 @@ public abstract class PicLayerAbstract extends Layer {
         naturalScale *= 0.01;
 
         LatLon ll1 = projection.eastNorth2latlon(
-                new EastNorth(en.east(), en.north()- naturalScale));
+                new EastNorth(en.east(), en.north() - naturalScale));
         LatLon ll2 = projection.eastNorth2latlon(
                 new EastNorth(en.east(), en.north() + naturalScale));
 
@@ -446,10 +451,10 @@ public abstract class PicLayerAbstract extends Layer {
         EastNorth center = transformer.getImagePosition();
         double w = image.getWidth(null);
         double h = image.getHeight(null);
-        double diag_pix = Math.sqrt(w*w+h*h);
+        double diag_pix = Math.sqrt(w * w + h * h);
 
         // initialImageScale is a the scale (unit: m/100pix) at creation time
-        double diag_m = (diag_pix/100) * initialImageScale;
+        double diag_m = (diag_pix / 100) * initialImageScale;
 
         AffineTransform trans = transformer.getTransform();
         double factor = Math.max(trans.getScaleX(), trans.getScaleY());
@@ -464,6 +469,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     /**
      * Saves the calibration data into properties structure
+     *
      * @param props Properties to save to
      */
     public void saveCalibration(Properties props) {
@@ -486,6 +492,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     /**
      * Loads calibration data from file
+     *
      * @param is The input stream to read from
      * @throws IOException in case of error
      */
@@ -497,6 +504,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     /**
      * Loads calibration data from properties structure
+     *
      * @param props Properties to load from
      */
     public void loadCalibration(Properties props) {
@@ -521,7 +529,7 @@ public abstract class PicLayerAbstract extends Layer {
             double shear_y = Double.valueOf(props.getProperty(SHEARY, "0"));
 
             // transform to matrix from these values - need testing
-            transform = AffineTransform.getRotateInstance(angle/180*Math.PI);
+            transform = AffineTransform.getRotateInstance(angle / 180 * Math.PI);
             transform.scale(scale_x, scale_y);
             transform.shear(shear_x, shear_y);
         } else {
@@ -546,14 +554,14 @@ public abstract class PicLayerAbstract extends Layer {
     public void loadWorldfile(InputStream is) throws IOException {
 
         try (
-            Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-            BufferedReader br = new BufferedReader(reader)
+                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(reader)
         ) {
             double[] e = new double[6];
             for (int i = 0; i < 6; ++i) {
                 String line = br.readLine();
                 if (line == null) {
-                    throw new IOException("Unable to read line " + (i+1));
+                    throw new IOException("Unable to read line " + (i + 1));
                 }
                 e[i] = JosmDecimalFormatSymbolsProvider.parseDouble(line);
             }
@@ -561,11 +569,11 @@ public abstract class PicLayerAbstract extends Layer {
             int w = image.getWidth(null);
             int h = image.getHeight(null);
             EastNorth imagePosition = new EastNorth(
-                    dx + w/2*sx + h/2*rx,
-                    dy + w/2*ry + h/2*sy
+                    dx + w / 2 * sx + h / 2 * rx,
+                    dy + w / 2 * ry + h / 2 * sy
             );
-            double scalex = 100*sx*getMetersPerEasting(imagePosition);
-            double scaley = -100*sy*getMetersPerNorthing(imagePosition);
+            double scalex = 100 * sx * getMetersPerEasting(imagePosition);
+            double scaley = -100 * sy * getMetersPerNorthing(imagePosition);
             double shearx = rx / sx;
             double sheary = ry / sy;
 
@@ -637,6 +645,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     /**
      * Moves the picture. Scaled in EastNorth...
+     *
      * @param x The offset to add in east direction
      * @param y The offset to add in north direction
      */
@@ -647,7 +656,7 @@ public abstract class PicLayerAbstract extends Layer {
     public void rotatePictureBy(double angle) {
         try {
             MapView mapView = MainApplication.getMap().mapView;
-            Point2D trans = transformPoint(new Point(mapView.getWidth()/2, mapView.getHeight()/2));
+            Point2D trans = transformPoint(new Point(mapView.getWidth() / 2, mapView.getHeight() / 2));
             transformer.concatenateTransformPoint(AffineTransform.getRotateInstance(angle), trans);
         } catch (NoninvertibleTransformException e) {
             Logging.error(e);
@@ -657,7 +666,7 @@ public abstract class PicLayerAbstract extends Layer {
     public void scalePictureBy(double scalex, double scaley) {
         try {
             MapView mapView = MainApplication.getMap().mapView;
-            Point2D trans = transformPoint(new Point(mapView.getWidth()/2, mapView.getHeight()/2));
+            Point2D trans = transformPoint(new Point(mapView.getWidth() / 2, mapView.getHeight() / 2));
             transformer.concatenateTransformPoint(AffineTransform.getScaleInstance(scalex, scaley), trans);
         } catch (NoninvertibleTransformException e) {
             Logging.error(e);
@@ -667,7 +676,7 @@ public abstract class PicLayerAbstract extends Layer {
     public void shearPictureBy(double shx, double shy) {
         try {
             MapView mapView = MainApplication.getMap().mapView;
-            Point2D trans = transformPoint(new Point(mapView.getWidth()/2, mapView.getHeight()/2));
+            Point2D trans = transformPoint(new Point(mapView.getWidth() / 2, mapView.getHeight() / 2));
             transformer.concatenateTransformPoint(AffineTransform.getShearInstance(shx, shy), trans);
         } catch (NoninvertibleTransformException e) {
             Logging.error(e);

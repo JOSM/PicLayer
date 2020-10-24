@@ -31,7 +31,7 @@ public abstract class GenericPicTransformAction extends MapMode implements Mouse
     private String actionName;
 
     public GenericPicTransformAction(String name, String actionName, String iconName,
-            String tooltip, Shortcut shortcut, MapFrame mapFrame, Cursor cursor) {
+                                     String tooltip, Shortcut shortcut, MapFrame mapFrame, Cursor cursor) {
         super(name, iconName, tooltip, shortcut, cursor);
         this.actionName = actionName;
     }

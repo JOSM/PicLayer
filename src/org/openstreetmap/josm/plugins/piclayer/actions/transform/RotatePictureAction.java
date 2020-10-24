@@ -26,7 +26,7 @@ public class RotatePictureAction extends GenericPicTransformAction {
 
     @Override
     protected void doAction(MouseEvent e) {
-        Point2D center = new Point(MainApplication.getMap().mapView.getWidth()/2, MainApplication.getMap().mapView.getHeight()/2);
+        Point2D center = new Point(MainApplication.getMap().mapView.getWidth() / 2, MainApplication.getMap().mapView.getHeight() / 2);
         double alpha1 = Math.atan2(e.getY() - center.getY(), e.getX() - center.getX());
         double alpha0 = Math.atan2(prevMousePoint.getY() - center.getY(), prevMousePoint.getX() - center.getX());
         currentLayer.rotatePictureBy(alpha1 - alpha0);

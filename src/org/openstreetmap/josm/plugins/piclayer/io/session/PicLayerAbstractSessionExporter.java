@@ -20,18 +20,19 @@ import org.w3c.dom.Element;
 /**
  * Session exporter for PicLayer.
  * Code copied and adjusted from JOSM GeoImageSessionExporter-class!
+ *
  * @param <T> Type of PicLayerAbstract
  * @author rebsc
  */
-public abstract class PicLayerAbstractSessionExporter<T extends PicLayerAbstract> extends AbstractSessionExporter<T>{
+public abstract class PicLayerAbstractSessionExporter<T extends PicLayerAbstract> extends AbstractSessionExporter<T> {
 
     public PicLayerAbstractSessionExporter(T layer) {
         super(layer);
     }
 
-	@Override
-	public Component getExportPanel() {
-		final JPanel p = new JPanel(new GridBagLayout());
+    @Override
+    public Component getExportPanel() {
+        final JPanel p = new JPanel(new GridBagLayout());
         export.setSelected(true);
         final JLabel lbl = new JLabel(layer.getName(), layer.getIcon(), SwingConstants.LEFT);
         lbl.setToolTipText(layer.getToolTipText());
@@ -40,11 +41,11 @@ public abstract class PicLayerAbstractSessionExporter<T extends PicLayerAbstract
         p.add(lbl, GBC.std());
         p.add(GBC.glue(1, 0), GBC.std().fill(GBC.HORIZONTAL));
         return p;
-	}
+    }
 
-	@Override
-	public Element export(ExportSupport support) throws IOException {
-		Element layerElem = support.createElement("layer");
+    @Override
+    public Element export(ExportSupport support) throws IOException {
+        Element layerElem = support.createElement("layer");
         layerElem.setAttribute("type", "piclayerImage");
         layerElem.setAttribute("version", "0.1");
 
@@ -69,8 +70,8 @@ public abstract class PicLayerAbstractSessionExporter<T extends PicLayerAbstract
 
             layerElem.appendChild(imgElem);
         }
-	    return layerElem;
-	}
+        return layerElem;
+    }
 
     protected static void addAttr(String name, String value, Element element, SessionWriter.ExportSupport support) {
         Element attrElem = support.createElement(name);

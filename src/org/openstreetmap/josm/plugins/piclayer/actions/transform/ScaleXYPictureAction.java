@@ -26,8 +26,8 @@ public class ScaleXYPictureAction extends GenericPicTransformAction {
 
     @Override
     protected void doAction(MouseEvent e) {
-        double centerX = MainApplication.getMap().mapView.getWidth()/2;
-        double centerY = MainApplication.getMap().mapView.getHeight()/2;
+        double centerX = MainApplication.getMap().mapView.getWidth() / 2;
+        double centerY = MainApplication.getMap().mapView.getHeight() / 2;
         double d0 = Math.max(prevMousePoint.distance(centerX, centerY), 10);
         Point2D mousePoint = new Point(e.getX(), e.getY());
         double d = mousePoint.distance(centerX, centerY);

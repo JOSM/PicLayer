@@ -17,7 +17,6 @@ import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
 
 /**
  * Action to load the calibration file.
- *
  */
 public class LoadPictureCalibrationAction extends JosmAction {
 
@@ -29,6 +28,7 @@ public class LoadPictureCalibrationAction extends JosmAction {
 
     /**
      * Constructor
+     *
      * @param owner Owner layer of the action
      */
     public LoadPictureCalibrationAction(PicLayerAbstract owner) {

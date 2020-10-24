@@ -27,8 +27,8 @@ public class MovePictureAction extends GenericPicTransformAction {
     protected void doAction(MouseEvent e) {
         EastNorth eastNorth = MainApplication.getMap().mapView.getEastNorth(e.getX(), e.getY());
         currentLayer.movePictureBy(
-            eastNorth.east() - prevEastNorth.east(),
-            eastNorth.north() - prevEastNorth.north()
+                eastNorth.east() - prevEastNorth.east(),
+                eastNorth.north() - prevEastNorth.north()
         );
     }
 

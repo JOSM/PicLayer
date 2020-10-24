@@ -24,7 +24,7 @@ public class ScaleXPictureAction extends GenericPicTransformAction {
 
     @Override
     protected void doAction(MouseEvent e) {
-        double centerX = MainApplication.getMap().mapView.getWidth()/2;
+        double centerX = MainApplication.getMap().mapView.getWidth() / 2;
         double dx0 = Math.max(Math.abs(prevMousePoint.getX() - centerX), 10);
         double dx = Math.abs(e.getX() - centerX);
         double scaleX = Math.max(dx / dx0, 0.9);
