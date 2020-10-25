@@ -17,13 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -234,7 +228,7 @@ public class CalibrationWindow extends JFrame {
 
     private void setContentPanel() {
         contentPanel.setLayout(new GridBagLayout());
-        contentPanel.setBackground(new Color(200, 200, 200));
+        contentPanel.setBackground(new Color(206, 210, 215));
         ((GridBagLayout) contentPanel.getLayout()).columnWidths = new int[]{0, 0, 0, 0, 0};
         ((GridBagLayout) contentPanel.getLayout()).rowHeights = new int[]{0, 0, 0, 0, 0, 0};
         ((GridBagLayout) contentPanel.getLayout()).columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0E-4};
@@ -242,7 +236,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setPointHeader() {
-        edgePointHeader.setText(tr("<html><b><u>Object corner points</u></b></html>"));
+        edgePointHeader.setText(tr("<html><b><u>Object Corner Points</u></b></html>"));
         contentPanel.add(edgePointHeader, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -334,7 +328,7 @@ public class CalibrationWindow extends JFrame {
 
     private void setOpenButton() {
         String imageName = "open.png";
-        Image image = null;
+        Image image;
         try {
             image = ImageIO.read(getClass().getResource("/images/" + imageName));
         } catch (Exception ex) {
@@ -350,7 +344,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setRefPointHeader() {
-        refPointHeader.setText("<html><b><u>Reference Points</u></b></html>\"");
+        refPointHeader.setText("<html><b><u>Object Reference Points</u></b></html>");
         contentPanel.add(refPointHeader, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
