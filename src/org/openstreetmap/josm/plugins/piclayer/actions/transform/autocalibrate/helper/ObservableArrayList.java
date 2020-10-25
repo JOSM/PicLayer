@@ -13,11 +13,7 @@ import java.util.Collection;
  */
 public class ObservableArrayList<E> extends ArrayList<E> {
 
-    private PropertyChangeSupport changes = new PropertyChangeSupport(this);
-
-    public ObservableArrayList() {
-        super();
-    }
+    private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 
     public ObservableArrayList(int cap) {
         super(cap);
@@ -27,7 +23,6 @@ public class ObservableArrayList<E> extends ArrayList<E> {
         super(c);
     }
 
-
     @Override
     public boolean add(E e) {
         int oldSize = super.size();
@@ -35,10 +30,8 @@ public class ObservableArrayList<E> extends ArrayList<E> {
             changes.firePropertyChange("size", oldSize, super.size());
             return true;
         }
-        ;
         return false;
     }
-
 
     @Override
     public void add(int index, E element) {
@@ -54,7 +47,6 @@ public class ObservableArrayList<E> extends ArrayList<E> {
             changes.firePropertyChange("size", oldSize, super.size());
             return true;
         }
-        ;
         return false;
     }
 
@@ -93,8 +85,8 @@ public class ObservableArrayList<E> extends ArrayList<E> {
 
     public void removeAllListener() {
         PropertyChangeListener[] listener = changes.getPropertyChangeListeners();
-        int size = listener.length;
-        for (int i = 0; i < size; i++) changes.removePropertyChangeListener(listener[i]);
+        for (PropertyChangeListener propertyChangeListener : listener)
+            changes.removePropertyChangeListener(propertyChangeListener);
     }
 
 }

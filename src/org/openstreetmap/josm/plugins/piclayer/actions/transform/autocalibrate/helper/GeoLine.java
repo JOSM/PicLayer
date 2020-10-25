@@ -1,21 +1,21 @@
 package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper;
 
+import org.openstreetmap.gui.jmapviewer.OsmMercator;
+
 import java.awt.geom.Point2D;
 
 /**
  * Class representing GeoLine
- * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
  *
  * @author rebsc
  */
 public class GeoLine {
 
-    private double lat1;
-    private double lon1;
-    private double lat2;
-    private double lon2;
-    private double distance;    // in meter
-    private double R = 6371e3;    // earth radius in meter
+    private final double lat1;
+    private final double lon1;
+    private final double lat2;
+    private final double lon2;
+    private final double distance;    // in meter
 
     public GeoLine(Point2D startPoint, Point2D endPoint) {
         this.lat1 = startPoint.getY();
@@ -61,7 +61,7 @@ public class GeoLine {
 
         double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
 
-        return R * c;
+        return OsmMercator.EARTH_RADIUS * c;
     }
 
     private double degToRad(double x) {

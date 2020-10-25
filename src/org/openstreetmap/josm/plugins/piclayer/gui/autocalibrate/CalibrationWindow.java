@@ -4,7 +4,6 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -12,7 +11,6 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
-import java.awt.event.WindowListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +30,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.AutoCalibratePictureAction;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Class providing main window for {@link AutoCalibratePictureAction} in {@link PicLayerPlugin}.
@@ -41,9 +40,8 @@ import org.openstreetmap.josm.tools.I18n;
 public class CalibrationWindow extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private static final int FILES_ONLY = 0;
 
-    private JFileChooser fileChooser;
+    private final JFileChooser fileChooser;
     private String referenceFileName;
     private List<Point2D> originPoints;
     private List<Point2D> referencePoints;
@@ -89,7 +87,6 @@ public class CalibrationWindow extends JFrame {
 
 
     private String separator;
-    private String ws = " ";
     private Locale language;
 
 
@@ -153,7 +150,7 @@ public class CalibrationWindow extends JFrame {
         setTitle(tr("AutoCalibration"));
         java.awt.Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        this.setMinimumSize(new Dimension(50, 100));
+        this.setResizable(false);
 
         // dialog pane
         dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
@@ -195,26 +192,24 @@ public class CalibrationWindow extends JFrame {
 
     private void setLanguageFormat() {
         // TODO get application language instead of system language
-        String c = I18n.getOriginalLocale().getCountry();
-        switch (c) {
+        switch (I18n.getOriginalLocale().getCountry()) {
             case "DE":
                 language = Locale.GERMAN;
-                separator = ";";
+                separator = " ; ";
                 break;
             case "FR":
                 language = Locale.FRANCE;
-                separator = ";";
+                separator = " ; ";
                 break;
             case "IT":
                 language = Locale.ITALIAN;
-                separator = ";";
+                separator = " ; ";
                 break;
             default:
                 language = Locale.US;
-                separator = ",";
+                separator = " , ";
         }
     }
-
 
     // COMPONENTS
 
@@ -226,13 +221,12 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setInfoHeader() {
-        infoHeader.setText(tr("<html>Please enter the required information.</html>"));
+        infoHeader.setText(tr("Please enter the required information."));
         infoBar.add(infoHeader, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 0, 0), 0, 0));
 
-        String space = "     ";
-        helpButton = new JButton(tr(space + "help" + space));
+        helpButton = new JButton(tr("help"));
         infoBar.add(helpButton, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
@@ -327,7 +321,8 @@ public class CalibrationWindow extends JFrame {
         try {
             image = ImageIO.read(getClass().getResource("/images/" + imageName));
         } catch (Exception ex) {
-            System.out.println("Error: Could not load image " + imageName + "," + ex);
+            Logging.error("Could not load image " + imageName + "," + ex);
+            return;
         }
 
         selectLayerButton.setToolTipText(tr("Select a layer as reference..."));
@@ -343,7 +338,8 @@ public class CalibrationWindow extends JFrame {
         try {
             image = ImageIO.read(getClass().getResource("/images/" + imageName));
         } catch (Exception ex) {
-            System.out.println("Error: Could not load image " + imageName + "," + ex);
+            Logging.error("Could not load image " + imageName + "," + ex);
+            return;
         }
 
         openButton.setToolTipText(tr("Open a file as reference..."));
@@ -405,9 +401,9 @@ public class CalibrationWindow extends JFrame {
     // DYNAMIC FIELD CHANGES
 
     private void edgePointValuesEntered() {
-        Point2D p1 = null;
-        Point2D p2 = null;
-        Point2D p3 = null;
+        Point2D p1;
+        Point2D p2;
+        Point2D p3;
 
         if (this.originPoints.size() == 3) {
             p1 = originPoints.get(0);
@@ -416,9 +412,9 @@ public class CalibrationWindow extends JFrame {
         } else return;
 
         edgePointValues.setText(tr("<html>"
-                + formatValue(p1.getY()) + ws + separator + ws + formatValue(p1.getX()) + "<br>"
-                + formatValue(p2.getY()) + ws + separator + ws + formatValue(p2.getX()) + "<br>"
-                + formatValue(p3.getY()) + ws + separator + ws + formatValue(p3.getX()) + "<br>"
+                + formatValue(p1.getY()) + separator + formatValue(p1.getX()) + "<br>"
+                + formatValue(p2.getY()) + separator + formatValue(p2.getX()) + "<br>"
+                + formatValue(p3.getY()) + separator + formatValue(p3.getX()) + "<br>"
                 + "</html>"));
 
         contentPanel.remove(addEdgePointsButton);
@@ -426,7 +422,10 @@ public class CalibrationWindow extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
 
-        edgePointsChecked.setIcon(getCheckedIcon());
+        ImageIcon icon = getCheckedIcon();
+        if (icon != null) {
+            edgePointsChecked.setIcon(icon);
+        }
         contentPanel.add(edgePointsChecked, new GridBagConstraints(6, 1, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 5), 0, 0));
@@ -439,7 +438,10 @@ public class CalibrationWindow extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
 
-        distance1Checked.setIcon(getCheckedIcon());
+        ImageIcon icon = getCheckedIcon();
+        if (icon != null) {
+            distance1Checked.setIcon(icon);
+        }
         contentPanel.add(distance1Checked, new GridBagConstraints(6, 3, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 5), 0, 0));
@@ -474,9 +476,9 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void refPointValuesEntered() {
-        Point2D p1 = null;
-        Point2D p2 = null;
-        Point2D p3 = null;
+        Point2D p1;
+        Point2D p2;
+        Point2D p3;
 
         if (this.referencePoints.size() == 3) {
             p1 = referencePoints.get(0);
@@ -485,9 +487,9 @@ public class CalibrationWindow extends JFrame {
         } else return;
 
         refPointValues.setText(tr("<html>"
-                + formatValue(p1.getY()) + ws + separator + ws + formatValue(p1.getX()) + "<br>"
-                + formatValue(p2.getY()) + ws + separator + ws + formatValue(p2.getX()) + "<br>"
-                + formatValue(p3.getY()) + ws + separator + ws + formatValue(p3.getX()) + "<br>"
+                + formatValue(p1.getY()) + separator + formatValue(p1.getX()) + "<br>"
+                + formatValue(p2.getY()) + separator + formatValue(p2.getX()) + "<br>"
+                + formatValue(p3.getY()) + separator + formatValue(p3.getX()) + "<br>"
                 + "</html>"));
 
         contentPanel.remove(addRefPointsButton);
@@ -565,12 +567,8 @@ public class CalibrationWindow extends JFrame {
         updateState();
     }
 
-    public void setReferenceFileName(String name) {
-        this.referenceFileName = name;
-    }
-
     private void setFileChooser() {
-        fileChooser.setFileSelectionMode(FILES_ONLY);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm, .gpx", "osm", "gpx");
         fileChooser.setFileFilter(filter);
     }
@@ -586,23 +584,7 @@ public class CalibrationWindow extends JFrame {
         return this.fileChooser;
     }
 
-    public String getFileName() {
-        return this.referenceFileName;
-    }
-
     // LISTENER
-
-    public void setOkButtonListener(ActionListener l) {
-        this.runButton.addActionListener(l);
-    }
-
-    public void setCancelButtonListener(ActionListener l) {
-        this.cancelButton.addActionListener(l);
-    }
-
-    public void setWindowListener(WindowListener l) {
-        this.addWindowListener(l);
-    }
 
     public void addOpenFileButtonListener(ActionListener l) {
         this.openButton.addActionListener(l);
@@ -653,11 +635,12 @@ public class CalibrationWindow extends JFrame {
 
     private ImageIcon getCheckedIcon() {
         String imageName = "checked.png";
-        Image image = null;
+        Image image;
         try {
             image = ImageIO.read(getClass().getResource("/images/" + imageName));
         } catch (Exception ex) {
-            System.out.println("Error: Could not load image " + imageName + "," + ex);
+            Logging.error("Could not load image " + imageName + "," + ex);
+            return null;
         }
         return new ImageIcon(image);
     }

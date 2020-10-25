@@ -9,10 +9,7 @@ import javax.swing.JOptionPane;
  */
 public class ReferenceOptionView {
 
-    public ReferenceOptionView() {
-    }
-
-    public int showAndChoose() {
+    public static int showAndChoose() {
         Object[] options = {tr("defined"), tr("manual")};
         String title = tr("AutoCalibration - choose selection type");
         String msg = tr("<html>Choose the type of selection you want to use.<br><br>"
@@ -20,14 +17,12 @@ public class ReferenceOptionView {
                 + "choose <b>defined</b>-option and select points.<br>"
                 + "Else choose <b>manual</b>-option and set the calibration end points manual.</html>");
 
-        int selected = JOptionPane.showOptionDialog(null,
+        return JOptionPane.showOptionDialog(null,
                 msg,
                 title,
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
                 null, options, options[0]);
-
-        return selected;
     }
 
 }

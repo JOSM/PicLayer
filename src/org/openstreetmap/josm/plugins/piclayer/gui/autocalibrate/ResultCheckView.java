@@ -9,22 +9,17 @@ import javax.swing.JOptionPane;
  */
 public class ResultCheckView {
 
-    public ResultCheckView() {
-    }
-
-    public int showAndChoose() {
+    public static int showAndChoose() {
         Object[] options = {tr("accept"), tr("reset")};
         String title = tr("AutoCalibration - check calibration");
         String msg = tr("<html>Is this image calibrated the right way?</html>");
 
-        int selected = JOptionPane.showOptionDialog(null,
+        return JOptionPane.showOptionDialog(null,
                 msg,
                 title,
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
                 null, options, options[0]);
-
-        return selected;
     }
 
 

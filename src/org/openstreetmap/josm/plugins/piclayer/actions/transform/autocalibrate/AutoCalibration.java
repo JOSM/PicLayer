@@ -21,7 +21,7 @@ import org.openstreetmap.josm.tools.Logging;
  *
  * @author rebsc
  */
-public class AutoCalibrator {
+public class AutoCalibration {
 
     private PicLayerAbstract currentLayer;
     private List<Point2D> startPositions;    // raw data - LatLon scale
@@ -30,32 +30,13 @@ public class AutoCalibrator {
     private double distance2To3;    // in meter
 
 
-    public AutoCalibrator() {
+    public AutoCalibration() {
         this.currentLayer = null;
         this.startPositions = new ArrayList<>(3);
         this.endPositions = new ArrayList<>(3);
         this.distance1To2 = 0.0;
         this.distance2To3 = 0.0;
     }
-
-    /**
-     * Calibrator - collects raw data for calibration
-     *
-     * @param abstractLayer {@link PicLayerAbstract} - currentLayer
-     * @param startPoints   representing points set on the image with using {@link PicLayerPlugin} actions, raw data - LatLon scale
-     * @param endPoints     representing points set on the image with using {@link PicLayerPlugin} actions, raw data - LatLon scale
-     * @param distance12    distance from point 1 to point 2 in startPoints - entered with using PicLayerPlugin actions. Scaled in meter.
-     * @param distance23    distance from point 2 to point 3 in startPoints - entered with using PicLayerPlugin actions. Scaled in meter.
-     */
-    public AutoCalibrator(PicLayerAbstract abstractLayer, List<Point2D> startPoints, List<Point2D> endPoints,
-                          double distance12, double distance23) {
-        this.currentLayer = abstractLayer;
-        this.startPositions = startPoints;
-        this.endPositions = endPoints;
-        this.distance1To2 = distance12;
-        this.distance2To3 = distance23;
-    }
-
 
     /**
      * Calibrates Image with given data.
@@ -122,11 +103,8 @@ public class AutoCalibrator {
         double[] compRatio = {1, compDist23 / compDist12, compDist13 / compDist12};
         double epsilon = 0.5;
 
-        if (compRatio[1] >= startRatio[1] - epsilon && compRatio[1] <= startRatio[1] + epsilon
-                && compRatio[2] >= startRatio[2] - epsilon && compRatio[2] <= startRatio[2] + epsilon) {
-            return true;
-        }
-        return false;
+        return compRatio[1] >= startRatio[1] - epsilon && compRatio[1] <= startRatio[1] + epsilon
+                && compRatio[2] >= startRatio[2] - epsilon && compRatio[2] <= startRatio[2] + epsilon;
     }
 
 
@@ -198,8 +176,6 @@ public class AutoCalibrator {
         handler.getErrorView().show(msg);
     }
 
-
-    // GETTER / SETTER
 
     public void setCurrentLayer(PicLayerAbstract currentLayer) {
         this.currentLayer = currentLayer;

@@ -21,26 +21,25 @@ import org.openstreetmap.josm.gui.layer.Layer;
 
 public class SelectLayerView {
 
-    private String[] labels;
-    private JList<?> list;
-    private JFrame frame;
+    private final String[] labels;
+    private final JList<Object> list;
+    private final JFrame frame;
     private JScrollPane scrollPane;
     private JPanel buttonBar;
     private JButton okButton;
     private JButton cancelButton;
-    private Container contentPane;
 
 
     public SelectLayerView() {
         labels = new String[10];
         getLayerNames();
-        list = new JList<Object>(labels);
+        list = new JList<>(labels);
 
         frame = new JFrame("Layer Selector");
         frame.setSize(400, 200);
         frame.setLocationRelativeTo(frame.getOwner());
 
-        contentPane = frame.getContentPane();
+        Container contentPane = frame.getContentPane();
 
         setScrollPane();
         contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -53,7 +52,9 @@ public class SelectLayerView {
 
     private void getLayerNames() {
         java.util.List<Layer> layer = MainApplication.getLayerManager().getLayers();
-        for (int i = 0; i < layer.size(); i++) labels[i] = layer.get(i).getName();
+        for (int i = 0; i < layer.size(); i++) {
+            labels[i] = layer.get(i).getName();
+        }
     }
 
     public void setVisible(boolean value) {
@@ -64,7 +65,7 @@ public class SelectLayerView {
         return this.frame;
     }
 
-    public JList<?> getList() {
+    public JList<Object> getList() {
         return this.list;
     }
 

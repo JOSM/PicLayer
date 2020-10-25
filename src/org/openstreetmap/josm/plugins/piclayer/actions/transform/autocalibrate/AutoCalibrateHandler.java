@@ -52,11 +52,9 @@ public class AutoCalibrateHandler {
 
     private PicLayerAbstract currentPicLayer;
     private CalibrationWindow mainWindow;
-    private CalibrationErrorView errorView;
-    private ReferenceOptionView refOptionView;
     private File referenceFile;
     private Layer referenceLayer;
-    private AutoCalibrator calibrator;
+    private final AutoCalibration calibration;
     private ObservableArrayList<Point2D> originPointList;        // points set on picture to calibrate, scaled in LatLon
     private ObservableArrayList<Point2D> referencePointList;    // points of reference data, scaled in LatLon
     private double distance1To2;    // in meter
@@ -73,24 +71,8 @@ public class AutoCalibrateHandler {
         this.currentPicLayer = null;
         this.mainWindow = new CalibrationWindow();
         addListenerToMainView();
-        this.calibrator = new AutoCalibrator();
+        this.calibration = new AutoCalibration();
     }
-
-    /**
-     * Method to call calibrating method for given image.
-     */
-    private void callCalibrator() {
-        if (currentPicLayer != null && originPointList.size() > 0 && referencePointList.size() > 0
-                && distance1To2 != 0.0 && distance2To3 != 0.0) {
-            calibrator.setCurrentLayer(currentPicLayer);
-            calibrator.setStartPositions(this.originPointList);
-            calibrator.setEndPositions(this.referencePointList);
-            calibrator.setDistance1To2(distance1To2);
-            calibrator.setDistance2To3(distance2To3);
-            calibrator.calibrate();
-        } else calibrator.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
-    }
-
 
     // MAIN WINDOW LISTENER
 
@@ -122,7 +104,7 @@ public class AutoCalibrateHandler {
         public void actionPerformed(ActionEvent e) {
             String topic = "Plugin/PicLayer";
             // open help browser
-            HelpBrowser.setUrlForHelpTopic(Optional.ofNullable(topic).orElse("/"));
+            HelpBrowser.setUrlForHelpTopic(Optional.of(topic).orElse("/"));
         }
     }
 
@@ -132,14 +114,11 @@ public class AutoCalibrateHandler {
      * @author rebsc
      */
     private class OpenFileButtonListener implements ActionListener {
-        private JButton openButton;
-        private JFileChooser fileChooser;
-
         @Override
         public void actionPerformed(ActionEvent event) {
             mainWindow.setVisible(false);
-            openButton = mainWindow.getOpenButton();
-            fileChooser = mainWindow.getFileChooser();
+            JButton openButton = mainWindow.getOpenButton();
+            JFileChooser fileChooser = mainWindow.getFileChooser();
 
             if (event.getSource() == openButton) {
                 int openValue = fileChooser.showOpenDialog(mainWindow);
@@ -153,6 +132,12 @@ public class AutoCalibrateHandler {
                 mainWindow.setVisible(true);
             }
             mainWindow.setVisible(true);
+        }
+
+        private void addFileInNewLayer(File file) {
+            List<File> files = new ArrayList<>();
+            files.add(file);
+            OpenFileAction.openFiles(files);
         }
     }
 
@@ -198,7 +183,7 @@ public class AutoCalibrateHandler {
 
                 if (referenceLayer != null) {
                     mainWindow.setReferenceFileNameValue(filename);
-                } else calibrator.showErrorView(CalibrationErrorView.SELECT_LAYER_ERROR);
+                } else calibration.showErrorView(CalibrationErrorView.SELECT_LAYER_ERROR);
 
                 selector.setVisible(false);
                 mainWindow.setVisible(true);
@@ -228,18 +213,32 @@ public class AutoCalibrateHandler {
         @Override
         public void actionPerformed(ActionEvent e) {
             // calibrate
-            callCalibrator();
+            callCalibration();
             currentPicLayer.clearDrawReferencePoints();
             currentPicLayer.invalidate();
             MainApplication.getLayerManager().setActiveLayer(currentPicLayer);
             mainWindow.setVisible(false);
             // let user check calibration
-            ResultCheckView checkView = new ResultCheckView();
-            int selectedValue = checkView.showAndChoose();
+            int selectedValue = ResultCheckView.showAndChoose();
             if (selectedValue == 1) {
                 currentPicLayer.getTransformer().resetCalibration();
                 currentPicLayer.invalidate();
             }
+        }
+
+        /**
+         * Method to call calibrating method for given image.
+         */
+        private void callCalibration() {
+            if (currentPicLayer != null && !originPointList.isEmpty() && !referencePointList.isEmpty()
+                    && distance1To2 != 0.0 && distance2To3 != 0.0) {
+                calibration.setCurrentLayer(currentPicLayer);
+                calibration.setStartPositions(originPointList);
+                calibration.setEndPositions(referencePointList);
+                calibration.setDistance1To2(distance1To2);
+                calibration.setDistance2To3(distance2To3);
+                calibration.calibrate();
+            } else calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
         }
     }
 
@@ -265,7 +264,7 @@ public class AutoCalibrateHandler {
      * @return adapter
      */
     private WindowAdapter getToolWindowListener() {
-        WindowAdapter adapter = new WindowAdapter() {
+        return new WindowAdapter() {
             @Override
             public void windowDeactivated(WindowEvent wEvt) {
                 ((JFrame) wEvt.getSource()).toFront();
@@ -276,9 +275,7 @@ public class AutoCalibrateHandler {
                 reset();
                 removeListChangedListener();
             }
-
         };
-        return adapter;
     }
 
     /**
@@ -295,7 +292,6 @@ public class AutoCalibrateHandler {
                 originPointList.addAll(currentPicLayer.getTransformer().getLatLonOriginPoints());
                 mainWindow.setOriginPoints(originPointList);
             }
-
             if (size == 3) {
                 mainWindow.setVisible(true);
                 currentPicLayer.getTransformer().getLatLonOriginPoints().removePropertyChangeListener(this);
@@ -313,7 +309,6 @@ public class AutoCalibrateHandler {
         public void propertyChange(PropertyChangeEvent event) {
             int size = (int) event.getNewValue();
             mainWindow.setReferencePoints(referencePointList);
-
             if (size == 3) {
                 mainWindow.setVisible(true);
                 referencePointList.removePropertyChangeListener(this);
@@ -386,8 +381,7 @@ public class AutoCalibrateHandler {
         @Override
         public void actionPerformed(ActionEvent e) {
             mainWindow.setVisible(false);
-            refOptionView = new ReferenceOptionView();
-            int selectedValue = refOptionView.showAndChoose();
+            int selectedValue = ReferenceOptionView.showAndChoose();
 
             if (selectedValue == 0) {    // defined
                 MainApplication.getMap().mapView.addMouseListener(new RefDefinedPointsMouseListener());
@@ -519,8 +513,7 @@ public class AutoCalibrateHandler {
     }
 
     public CalibrationErrorView getErrorView() {
-        this.errorView = new CalibrationErrorView();
-        return errorView;
+        return new CalibrationErrorView();
     }
 
 
@@ -603,11 +596,5 @@ public class AutoCalibrateHandler {
         } catch (NullPointerException | NumberFormatException ex) {
             return false;
         }
-    }
-
-    private void addFileInNewLayer(File file) {
-        List<File> files = new ArrayList<>();
-        files.add(file);
-        OpenFileAction.openFiles(files);
     }
 }
