@@ -8,7 +8,6 @@ import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapViewState.MapViewPoint;
-import org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationErrorView;
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;

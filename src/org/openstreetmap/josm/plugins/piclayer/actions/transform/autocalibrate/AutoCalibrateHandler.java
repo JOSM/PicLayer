@@ -334,7 +334,7 @@ public class AutoCalibrateHandler {
             currentPicLayer.setDrawFirstLine(false);
             currentPicLayer.invalidate();
 
-            String value = mainWindow.getDistance1FieldText();
+            String value = mainWindow.getDistance1FieldText().replace(",", ".");
             if (validValue(value)) {
                 mainWindow.getDistance1Field().selectAll();
                 mainWindow.setDistance1Value(value);
@@ -362,7 +362,7 @@ public class AutoCalibrateHandler {
             currentPicLayer.setDrawSecLine(false);
             currentPicLayer.invalidate();
 
-            String value = mainWindow.getDistance2FieldText();
+            String value = mainWindow.getDistance2FieldText().replace(",", ".");
             if (validValue(value)) {
                 mainWindow.getDistance2Field().selectAll();
                 mainWindow.setDistance2Value(value);

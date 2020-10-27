@@ -236,7 +236,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setPointHeader() {
-        edgePointHeader.setText(tr("<html><b><u>Object Corner Points</u></b></html>"));
+        edgePointHeader.setText(tr("<html><b><u>Building Corner Points</u></b></html>"));
         contentPanel.add(edgePointHeader, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -291,7 +291,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setRefFileHeader() {
-        refFileHeader.setText(tr("<html><b><u>Reference File</u></b></html>"));
+        refFileHeader.setText(tr("<html><b><u>Building Reference File</u></b></html>"));
         contentPanel.add(refFileHeader, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -319,7 +319,7 @@ public class CalibrationWindow extends JFrame {
             return;
         }
 
-        selectLayerButton.setToolTipText(tr("Select a layer as reference..."));
+        selectLayerButton.setToolTipText(tr("Select a layer including the building outline as reference..."));
         selectLayerButton.setIcon(new ImageIcon(image));
         contentPanel.add(selectLayerButton, new GridBagConstraints(3, 6, 2, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -336,7 +336,7 @@ public class CalibrationWindow extends JFrame {
             return;
         }
 
-        openButton.setToolTipText(tr("Open a file as reference..."));
+        openButton.setToolTipText(tr("Open a file including the building outline as reference..."));
         openButton.setIcon(new ImageIcon(image));
         contentPanel.add(openButton, new GridBagConstraints(6, 6, GridBagConstraints.REMAINDER, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -344,7 +344,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setRefPointHeader() {
-        refPointHeader.setText("<html><b><u>Object Reference Points</u></b></html>");
+        refPointHeader.setText("<html><b><u>Building Reference Points</u></b></html>");
         contentPanel.add(refPointHeader, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
