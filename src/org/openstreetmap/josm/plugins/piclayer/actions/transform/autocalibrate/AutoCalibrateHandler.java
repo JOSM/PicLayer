@@ -164,6 +164,7 @@ public class AutoCalibrateHandler {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selector.getFrame().dispatchEvent(new WindowEvent(selector.getFrame(), WindowEvent.WINDOW_CLOSING));
+                mainWindow.setVisible(true);
             }
         }
 
