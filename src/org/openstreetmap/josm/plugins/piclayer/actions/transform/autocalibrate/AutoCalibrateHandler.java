@@ -224,6 +224,7 @@ public class AutoCalibrateHandler {
                 currentPicLayer.getTransformer().resetCalibration();
                 currentPicLayer.invalidate();
             }
+            reset();
         }
 
         /**
