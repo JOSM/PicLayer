@@ -142,7 +142,7 @@ public class PicLayerFromFile extends PicLayerAbstract {
                                 if (wldEntry != null) {
                                     if (confirmCalibrationLoading(wldName)) {
                                         InputStream is = zipFile.getInputStream(wldEntry);
-                                        loadWorldfile(is);
+                                        loadWorldFile(is);
                                         return;
                                     }
                                 }
@@ -170,7 +170,7 @@ public class PicLayerFromFile extends PicLayerAbstract {
                         for (String wldExtension : wldExtensions[i]) {
                             File wldFile = new File(m_file.getParentFile(), namepart + wldExtension);
                             if (wldFile.exists()) {
-                                loadWorldfile(new FileInputStream(wldFile));
+                                loadWorldFile(new FileInputStream(wldFile));
                                 return;
                             }
                         }

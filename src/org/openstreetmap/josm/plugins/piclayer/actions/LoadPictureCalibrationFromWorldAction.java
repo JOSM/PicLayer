@@ -37,7 +37,7 @@ public class LoadPictureCalibrationFromWorldAction extends JosmAction {
 
             // Load
             try {
-                layer.loadWorldfile(new FileInputStream(fc.getSelectedFile()));
+                layer.loadWorldFile(new FileInputStream(fc.getSelectedFile()));
             } catch (Exception ex) {
                 // Error
                 ex.printStackTrace();

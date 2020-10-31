@@ -51,6 +51,24 @@ import org.openstreetmap.josm.tools.Logging;
  * anything...)
  */
 public abstract class PicLayerAbstract extends Layer {
+
+    // Keys for loading from old/new Properties
+    private static final String POSITION_X = "POSITION_X";
+    private static final String POSITION_Y = "POSITION_Y";
+    private static final String ANGLE = "ANGLE";
+    private static final String INITIAL_SCALE = "INITIAL_SCALE";
+    private static final String SCALEX = "SCALEX";
+    private static final String SCALEY = "SCALEY";
+    private static final String SHEARX = "SHEARX";
+    private static final String SHEARY = "SHEARY";
+    // new properties
+    private static final String MATRIXm00 = "M00";
+    private static final String MATRIXm01 = "M01";
+    private static final String MATRIXm10 = "M10";
+    private static final String MATRIXm11 = "M11";
+    private static final String MATRIXm02 = "M02";
+    private static final String MATRIXm12 = "M12";
+
     // Counter - just for naming of layers
     private static int imageCounter = 0;
 
@@ -77,102 +95,7 @@ public abstract class PicLayerAbstract extends Layer {
     // Layer icon / lines
     private Icon layerIcon = null;
 
-    // markers and usability values
-    private boolean drawOriginMarkers = true;
-    private boolean drawRefMarkers = false;
-    private boolean drawOrigin1To2Line = false;
-    private boolean drawOrigin2To3Line = false;
-    private boolean drawRef1To2Line = false;
-    private boolean drawRef2To3Line = false;
-    private GeoLine refLine1To2;
-    private GeoLine refLine2To3;
-
-    public void setDrawOriginPoints(boolean value) {
-        drawOriginMarkers = value;
-    }
-
-    private List<Point2D> refPointsBuffer = new ArrayList<>(3);    // only for buffering
-
-    public void setDrawReferencePoints(boolean value, Point2D pointToDraw) {
-        drawRefMarkers = value;
-        if (this.refPointsBuffer == null) refPointsBuffer = new ArrayList<>(3);
-        if (pointToDraw != null) this.refPointsBuffer.add(pointToDraw);
-    }
-
-    public void resetDrawReferencePoints() {
-        drawRefMarkers = false;
-        this.refPointsBuffer = null;
-    }
-
-    public void resetDrawLines() {
-        drawOrigin1To2Line = false;
-        drawOrigin2To3Line = false;
-        drawRef1To2Line = false;
-        drawRef2To3Line = false;
-        refLine1To2 = null;
-        refLine2To3 = null;
-    }
-
-    public void resetMarkersAndUsabilityValues() {
-        resetDrawReferencePoints();
-        resetDrawLines();
-        drawOriginMarkers = true;
-    }
-
-    public void setDrawOrigin1To2Line(boolean value) {
-        drawOrigin1To2Line = value;
-    }
-
-    public void setDrawOrigin2To3Line(boolean value) {
-        drawOrigin2To3Line = value;
-    }
-
-    public void setDrawRef1To2Line(Point2D p1, Point2D p2) {
-        drawRef1To2Line = true;
-        refLine1To2 = new GeoLine(p1, p2);
-    }
-
-    public void unsetDrawRef1ToRef2Line() {
-        drawRef1To2Line = false;
-    }
-
-    public void setDrawRef2To3Line(Point2D p1, Point2D p2) {
-        drawRef2To3Line = true;
-        refLine2To3 = new GeoLine(p1, p2);
-    }
-
-    public void unsetDrawRef2ToRef3Line() {
-        drawRef2To3Line = false;
-    }
-
-    public GeoLine getRefLine1To2() {
-        return refLine1To2;
-    }
-
-    public GeoLine getRefLine2To3() {
-        return refLine2To3;
-    }
-
-    public PictureTransform getTransformer() {
-        return transformer;
-    }
-
-    // Keys for loading from old/new Properties
-    private static final String POSITION_X = "POSITION_X";
-    private static final String POSITION_Y = "POSITION_Y";
-    private static final String ANGLE = "ANGLE";
-    private static final String INITIAL_SCALE = "INITIAL_SCALE";
-    private static final String SCALEX = "SCALEX";
-    private static final String SCALEY = "SCALEY";
-    private static final String SHEARX = "SHEARX";
-    private static final String SHEARY = "SHEARY";
-    // new properties
-    private static final String MATRIXm00 = "M00";
-    private static final String MATRIXm01 = "M01";
-    private static final String MATRIXm10 = "M10";
-    private static final String MATRIXm11 = "M11";
-    private static final String MATRIXm02 = "M02";
-    private static final String MATRIXm12 = "M12";
+    protected final Projection projection;
 
     // pin images properties - tile anchors, width and offset
     // TODO: load these from properties file in images folder...
@@ -183,7 +106,16 @@ public abstract class PicLayerAbstract extends Layer {
     private static final int pinWidth = 64;
     private static final int pinHeight = 64;
 
-    protected final Projection projection;
+    // markers and usability values
+    private boolean drawOriginMarkers = true;
+    private boolean drawRefMarkers = false;
+    private boolean drawOrigin1To2Line = false;
+    private boolean drawOrigin2To3Line = false;
+    private boolean drawRef1To2Line = false;
+    private boolean drawRef2To3Line = false;
+    private GeoLine refLine1To2;
+    private GeoLine refLine2To3;
+    private List<Point2D> refPointsBuffer = new ArrayList<>(3);    // only for buffering
 
     /**
      * Constructor
@@ -253,6 +185,15 @@ public abstract class PicLayerAbstract extends Layer {
 
     protected abstract void lookForCalibration() throws IOException;
 
+    @Override
+    public boolean isMergable(Layer arg0) {
+        return false;
+    }
+
+    @Override
+    public void mergeFrom(Layer arg0) {
+    }
+
     /**
      * To be overridden by subclasses. Returns the user readable name of the layer.
      *
@@ -301,13 +242,52 @@ public abstract class PicLayerAbstract extends Layer {
         return list;
     }
 
-    @Override
-    public boolean isMergable(Layer arg0) {
-        return false;
+    public GeoLine getRefLine1To2() {
+        return refLine1To2;
     }
 
-    @Override
-    public void mergeFrom(Layer arg0) {
+    public GeoLine getRefLine2To3() {
+        return refLine2To3;
+    }
+
+    public PictureTransform getTransformer() {
+        return transformer;
+    }
+
+    public void setDrawOriginPoints(boolean value) {
+        drawOriginMarkers = value;
+    }
+
+    public void setDrawReferencePoints(boolean value, Point2D pointToDraw) {
+        drawRefMarkers = value;
+        if (this.refPointsBuffer == null) refPointsBuffer = new ArrayList<>(3);
+        if (pointToDraw != null) this.refPointsBuffer.add(pointToDraw);
+    }
+
+    public void setDrawOrigin1To2Line(boolean value) {
+        drawOrigin1To2Line = value;
+    }
+
+    public void setDrawOrigin2To3Line(boolean value) {
+        drawOrigin2To3Line = value;
+    }
+
+    public void setDrawRef1To2Line(Point2D p1, Point2D p2) {
+        drawRef1To2Line = true;
+        refLine1To2 = new GeoLine(p1, p2);
+    }
+
+    public void unsetDrawRef1ToRef2Line() {
+        drawRef1To2Line = false;
+    }
+
+    public void setDrawRef2To3Line(Point2D p1, Point2D p2) {
+        drawRef2To3Line = true;
+        refLine2To3 = new GeoLine(p1, p2);
+    }
+
+    public void unsetDrawRef2ToRef3Line() {
+        drawRef2To3Line = false;
     }
 
     @Override
@@ -465,8 +445,7 @@ public abstract class PicLayerAbstract extends Layer {
         LatLon ll2 = projection.eastNorth2latlon(
                 new EastNorth(en.east() + naturalScale, en.north()));
 
-        double dist = ll1.greatCircleDistance(ll2) / naturalScale / 2;
-        return dist;
+        return ll1.greatCircleDistance(ll2) / naturalScale / 2;
     }
 
     /* see getMetersPerEasting */
@@ -479,8 +458,7 @@ public abstract class PicLayerAbstract extends Layer {
         LatLon ll2 = projection.eastNorth2latlon(
                 new EastNorth(en.east(), en.north() + naturalScale));
 
-        double dist = ll1.greatCircleDistance(ll2) / naturalScale / 2;
-        return dist;
+        return ll1.greatCircleDistance(ll2) / naturalScale / 2;
     }
 
     @Override
@@ -606,7 +584,7 @@ public abstract class PicLayerAbstract extends Layer {
         invalidate();
     }
 
-    public void loadWorldfile(InputStream is) throws IOException {
+    public void loadWorldFile(InputStream is) throws IOException {
 
         try (
                 Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -694,8 +672,7 @@ public abstract class PicLayerAbstract extends Layer {
 
         pointTrans.concatenate(transformer.getTransform());
 
-        Point2D result = pointTrans.inverseTransform(p, null);
-        return result;
+        return pointTrans.inverseTransform(p, null);
     }
 
     /**
@@ -787,5 +764,25 @@ public abstract class PicLayerAbstract extends Layer {
             Logging.error(e);
         }
         return selected;
+    }
+
+    public void resetDrawReferencePoints() {
+        drawRefMarkers = false;
+        this.refPointsBuffer = null;
+    }
+
+    public void resetDrawLines() {
+        drawOrigin1To2Line = false;
+        drawOrigin2To3Line = false;
+        drawRef1To2Line = false;
+        drawRef2To3Line = false;
+        refLine1To2 = null;
+        refLine2To3 = null;
+    }
+
+    public void resetMarkersAndUsabilityValues() {
+        resetDrawReferencePoints();
+        resetDrawLines();
+        drawOriginMarkers = true;
     }
 }
