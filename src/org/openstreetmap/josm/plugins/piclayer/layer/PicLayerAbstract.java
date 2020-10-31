@@ -3,13 +3,7 @@ package org.openstreetmap.josm.plugins.piclayer.layer;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -37,6 +31,7 @@ import org.openstreetmap.josm.data.projection.Projection;
 import org.openstreetmap.josm.data.projection.ProjectionRegistry;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.MapViewState;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.geoimage.ImageEntry;
 import org.openstreetmap.josm.plugins.piclayer.actions.LoadPictureCalibrationAction;
@@ -44,6 +39,7 @@ import org.openstreetmap.josm.plugins.piclayer.actions.LoadPictureCalibrationFro
 import org.openstreetmap.josm.plugins.piclayer.actions.ResetCalibrationAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.SavePictureCalibrationAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.SavePictureCalibrationToWorldAction;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.transform.PictureTransform;
 import org.openstreetmap.josm.tools.JosmDecimalFormatSymbolsProvider;
 import org.openstreetmap.josm.tools.Logging;
@@ -60,6 +56,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     // This is the main image to be displayed
     protected Image image = null;
+
     // Tiles of pin images
     private static Image pinTiledImage;
     private static Image pinTiledImageOrange;
@@ -69,23 +66,26 @@ public abstract class PicLayerAbstract extends Layer {
 
     // Initial position of the image in the real world
     // protected EastNorth initialImagePosition;
-
     // Position of the image in the real world
-    //protected EastNorth imagePosition;
-
+    // protected EastNorth imagePosition
     // The scale that was set on the map during image creation
+
     protected double initialImageScale = 1.0;
+
+    protected PictureTransform transformer;
 
     // Layer icon / lines
     private Icon layerIcon = null;
 
+    // markers and usability values
     private boolean drawOriginMarkers = true;
-
     private boolean drawRefMarkers = false;
-
-    private boolean drawFirstLine = false;
-
-    private boolean drawSecLine = false;
+    private boolean drawOrigin1To2Line = false;
+    private boolean drawOrigin2To3Line = false;
+    private boolean drawRef1To2Line = false;
+    private boolean drawRef2To3Line = false;
+    private GeoLine refLine1To2;
+    private GeoLine refLine2To3;
 
     public void setDrawOriginPoints(boolean value) {
         drawOriginMarkers = value;
@@ -99,20 +99,59 @@ public abstract class PicLayerAbstract extends Layer {
         if (pointToDraw != null) this.refPointsBuffer.add(pointToDraw);
     }
 
-    public void clearDrawReferencePoints() {
+    public void resetDrawReferencePoints() {
         drawRefMarkers = false;
         this.refPointsBuffer = null;
     }
 
-    public void setDrawFirstLine(boolean value) {
-        drawFirstLine = value;
+    public void resetDrawLines() {
+        drawOrigin1To2Line = false;
+        drawOrigin2To3Line = false;
+        drawRef1To2Line = false;
+        drawRef2To3Line = false;
+        refLine1To2 = null;
+        refLine2To3 = null;
     }
 
-    public void setDrawSecLine(boolean value) {
-        drawSecLine = value;
+    public void resetMarkersAndUsabilityValues() {
+        resetDrawReferencePoints();
+        resetDrawLines();
+        drawOriginMarkers = true;
     }
 
-    protected PictureTransform transformer;
+    public void setDrawOrigin1To2Line(boolean value) {
+        drawOrigin1To2Line = value;
+    }
+
+    public void setDrawOrigin2To3Line(boolean value) {
+        drawOrigin2To3Line = value;
+    }
+
+    public void setDrawRef1To2Line(Point2D p1, Point2D p2) {
+        drawRef1To2Line = true;
+        refLine1To2 = new GeoLine(p1, p2);
+    }
+
+    public void unsetDrawRef1ToRef2Line() {
+        drawRef1To2Line = false;
+    }
+
+    public void setDrawRef2To3Line(Point2D p1, Point2D p2) {
+        drawRef2To3Line = true;
+        refLine2To3 = new GeoLine(p1, p2);
+    }
+
+    public void unsetDrawRef2ToRef3Line() {
+        drawRef2To3Line = false;
+    }
+
+    public GeoLine getRefLine1To2() {
+        return refLine1To2;
+    }
+
+    public GeoLine getRefLine2To3() {
+        return refLine2To3;
+    }
 
     public PictureTransform getTransformer() {
         return transformer;
@@ -273,9 +312,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     @Override
     public void paint(Graphics2D g2, MapView mv, Bounds bounds) {
-
         if (image != null) {
-
             // Position image at the right graphical place
             EastNorth center = mv.getCenter();
             EastNorth leftop = mv.getEastNorth(0, 0);
@@ -283,7 +320,7 @@ public abstract class PicLayerAbstract extends Layer {
             // This is the same in x- and y- direction.
             double pixel_per_en = (mv.getWidth() / 2.0) / (center.east() - leftop.east());
 
-            //     This is now the offset in screen pixels
+            // This is now the offset in screen pixels
             EastNorth imagePosition = transformer.getImagePosition();
             double pic_offset_x = ((imagePosition.east() - leftop.east()) * pixel_per_en);
             double pic_offset_y = ((leftop.north() - imagePosition.north()) * pixel_per_en);
@@ -320,69 +357,87 @@ public abstract class PicLayerAbstract extends Layer {
                         height
                 );
             }
+
+            // Graphics setup for marker
+            Graphics2D gPoints = (Graphics2D) g2.create();
+            gPoints.translate(pic_offset_x, pic_offset_y);
+            gPoints.setColor(Color.RED); // red color for points output
+            AffineTransform tr = AffineTransform.getScaleInstance(scalex, scaley);
+            tr.concatenate(transformer.getTransform());
+
+            // Draw markers and lines
             if (drawOriginMarkers) {
-                // draw markers for selection
-                Graphics2D gPoints = (Graphics2D) g2.create();
-
-                gPoints.translate(pic_offset_x, pic_offset_y);
-
-                gPoints.setColor(Color.RED); // red color for points output
-
-                AffineTransform tr = AffineTransform.getScaleInstance(scalex, scaley);
-                tr.concatenate(transformer.getTransform());
-
                 for (int i = 0; i < transformer.getOriginPoints().size(); i++) {
                     Point2D trP = tr.transform(transformer.getOriginPoints().get(i), null);
-                    int x = (int) trP.getX(), y = (int) trP.getY();
-
-                    int dstx = x - pinAnchorX;
-                    int dsty = y - pinAnchorY;
-                    gPoints.drawImage(pinTiledImage, dstx, dsty, dstx + pinWidth, dsty + pinHeight,
-                            pinTileOffsetX[i], pinTileOffsetY[i], pinTileOffsetX[i] + pinWidth, pinTileOffsetY[i] + pinHeight, null);
+                    drawMarkerImage(gPoints, pinTiledImage, trP, i);
+                }
+                List<Point2D> points = this.getTransformer().getOriginPoints();
+                if (drawOrigin1To2Line) {
+                    drawLine(g, points.get(0), points.get(1));
+                }
+                if (drawOrigin2To3Line) {
+                    drawLine(g, points.get(1), points.get(2));
                 }
             }
             if (drawRefMarkers) {
-                // draw markers for selection
-                Graphics2D gPoints = (Graphics2D) g2.create();
-
-                gPoints.translate(pic_offset_x, pic_offset_y);
-
-                gPoints.setColor(Color.RED); // red color for points output
-
-                AffineTransform tr = AffineTransform.getScaleInstance(scalex, scaley);
-                tr.concatenate(transformer.getTransform());
-
                 for (int i = 0; i < refPointsBuffer.size(); i++) {
-                    Point2D trP = tr.transform(refPointsBuffer.get(i), null);
-                    int x = (int) trP.getX(), y = (int) trP.getY();
-
-                    int dstx = x - pinAnchorX;
-                    int dsty = y - pinAnchorY;
-                    gPoints.drawImage(pinTiledImageOrange, dstx, dsty, dstx + pinWidth, dsty + pinHeight,
-                            pinTileOffsetX[i], pinTileOffsetY[i], pinTileOffsetX[i] + pinWidth, pinTileOffsetY[i] + pinHeight, null);
+                    Point2D trPLocal = transformPointToPicLayerScale(refPointsBuffer.get(i));
+                    Point2D trP = tr.transform(trPLocal, null);
+                    drawMarkerImage(gPoints, pinTiledImageOrange, trP, i);
                 }
-            }
-            if (drawFirstLine) {
-                // set line from point1 to point2
-                List<Point2D> points = this.getTransformer().getOriginPoints();
-                Point2D p1 = points.get(0);
-                Point2D p2 = points.get(1);
-                g.setColor(Color.green);
-                g.setStroke(new BasicStroke(5));
-                g.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
-            }
-            if (drawSecLine) {
-                // set line from point2 to point3
-                List<Point2D> points = this.getTransformer().getOriginPoints();
-                Point2D p2 = points.get(1);
-                Point2D p3 = points.get(2);
-                g.setColor(Color.green);
-                g.setStroke(new BasicStroke(5));
-                g.drawLine((int) p2.getX(), (int) p2.getY(), (int) p3.getX(), (int) p3.getY());
+                if (drawRef1To2Line) {
+                    if (refLine1To2 == null) return;
+                    Point2D trP1Local = transformPointToPicLayerScale(refLine1To2.getStartPoint());
+                    Point2D p1 = tr.transform(trP1Local, null);
+                    Point2D trP2Local = transformPointToPicLayerScale(refLine1To2.getEndPoint());
+                    Point2D p2 = tr.transform(trP2Local, null);
+                    drawLine(gPoints, p1, p2);
+                    drawMarkerImage(gPoints, pinTiledImageOrange, p2, 1);
+                }
+                if (drawRef2To3Line) {
+                    if (refLine2To3 == null) return;
+                    Point2D trP1Local = transformPointToPicLayerScale(refLine2To3.getStartPoint());
+                    Point2D p1 = tr.transform(trP1Local, null);
+                    Point2D trP2Local = transformPointToPicLayerScale(refLine2To3.getEndPoint());
+                    Point2D p2 = tr.transform(trP2Local, null);
+                    drawLine(gPoints, p1, p2);
+                    drawMarkerImage(gPoints, pinTiledImageOrange, p2, 2);
+                }
             }
         } else {
             Logging.error("PicLayerAbstract::paint - general drawing error (image is null or Graphics not 2D");
         }
+    }
+
+    /**
+     * Draw marker image
+     *
+     * @param g              {@link Graphics2D}
+     * @param image          to draw on the map
+     * @param markerPosition ,centered and transformed (by current {@link AffineTransform})
+     * @param markerNumber   on image
+     */
+    private void drawMarkerImage(Graphics2D g, Image image, Point2D markerPosition, int markerNumber) {
+        int x = (int) markerPosition.getX();
+        int y = (int) markerPosition.getY();
+        int dstx = x - pinAnchorX;
+        int dsty = y - pinAnchorY;
+        g.drawImage(image, dstx, dsty, dstx + pinWidth, dsty + pinHeight,
+                pinTileOffsetX[markerNumber], pinTileOffsetY[markerNumber], pinTileOffsetX[markerNumber] + pinWidth, pinTileOffsetY[markerNumber] + pinHeight, null);
+    }
+
+    /**
+     * Draws a green line from param p1 to param p2
+     *
+     * @param g  {@link Graphics2D}
+     * @param p1 start point
+     * @param p2 end point
+     */
+    private void drawLine(Graphics2D g, Point2D p1, Point2D p2) {
+        if (g == null || p1 == null || p2 == null) return;
+        g.setColor(Color.green);
+        g.setStroke(new BasicStroke(5));
+        g.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
     }
 
     /**
@@ -512,17 +567,17 @@ public abstract class PicLayerAbstract extends Layer {
 
         AffineTransform transform;
 
-        double pos_x = Double.valueOf(props.getProperty(POSITION_X, "0"));
-        double pos_y = Double.valueOf(props.getProperty(POSITION_Y, "0"));
+        double pos_x = Double.parseDouble(props.getProperty(POSITION_X, "0"));
+        double pos_y = Double.parseDouble(props.getProperty(POSITION_Y, "0"));
 
         EastNorth imagePosition = new EastNorth(pos_x, pos_y);
         transformer.setImagePosition(imagePosition);
 
-        initialImageScale = Double.valueOf(props.getProperty(INITIAL_SCALE, "1")); //in_scale
+        initialImageScale = Double.parseDouble(props.getProperty(INITIAL_SCALE, "1")); //in_scale
         if (props.containsKey(SCALEX)) { // old format
             //double in_pos_x = Double.valueOf(props.getProperty(INITIAL_POS_X, "0"));
             //double in_pos_y = Double.valueOf(props.getProperty(INITIAL_POS_Y, "0"));
-            double angle = Double.valueOf(props.getProperty(ANGLE, "0"));
+            double angle = Double.parseDouble(props.getProperty(ANGLE, "0"));
             double scale_x = Double.valueOf(props.getProperty(SCALEX, "1"));
             double scale_y = Double.valueOf(props.getProperty(SCALEY, "1"));
             double shear_x = Double.valueOf(props.getProperty(SHEARX, "0"));
@@ -641,6 +696,31 @@ public abstract class PicLayerAbstract extends Layer {
 
         Point2D result = pointTrans.inverseTransform(p, null);
         return result;
+    }
+
+    /**
+     * Method to transforms {@code Point2D} to {@link PicLayerAbstract} scale.
+     *
+     * @param point to transform in LatLon
+     * @return transformed point in {@link PicLayerAbstract} scale
+     */
+    private Point2D transformPointToPicLayerScale(Point2D point) {
+        Point2D translatedPoint = null;
+        LatLon ll;                // LatLon object from raw Point2D
+        MapViewState.MapViewPoint en;        // MapViewPoint object from LatLon(ll) scaled in EastNorth(en)
+
+        // put raw Point2D endPos into LatLon and transform LatLon into MapViewPoint (EastNorth)
+        ll = new LatLon(point.getY(), point.getX());
+        en = MainApplication.getMap().mapView.getState().getPointFor(ll);
+
+        // transform EastNorth into current layer scale
+        try {
+            translatedPoint = transformPoint(new Point2D.Double(en.getInViewX(), en.getInViewY()));
+        } catch (NoninvertibleTransformException e) {
+            Logging.error(e);
+        }
+
+        return translatedPoint;
     }
 
     /**

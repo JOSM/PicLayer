@@ -1,14 +1,7 @@
 package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate;
 
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
@@ -33,6 +26,7 @@ import org.openstreetmap.josm.gui.MapViewState.MapViewPoint;
 import org.openstreetmap.josm.gui.help.HelpBrowser;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.MovePointAction;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.ObservableArrayList;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationErrorView;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationWindow;
@@ -55,11 +49,10 @@ public class AutoCalibrateHandler {
     private File referenceFile;
     private Layer referenceLayer;
     private final AutoCalibration calibration;
-    private ObservableArrayList<Point2D> originPointList;        // points set on picture to calibrate, scaled in LatLon
+    private ObservableArrayList<Point2D> originPointList;       // points set on picture to calibrate, scaled in LatLon
     private ObservableArrayList<Point2D> referencePointList;    // points of reference data, scaled in LatLon
     private double distance1To2;    // in meter
     private double distance2To3;    // in meter
-
 
     public AutoCalibrateHandler() {
         this.originPointList = new ObservableArrayList<>(3);
@@ -73,8 +66,6 @@ public class AutoCalibrateHandler {
         addListenerToMainView();
         this.calibration = new AutoCalibration();
     }
-
-    // MAIN WINDOW LISTENER
 
     /**
      * Method adds listener to main view
@@ -96,8 +87,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Help button listener
-     *
-     * @author rebsc
      */
     private static class HelpButtonListener implements ActionListener {
         @Override
@@ -110,8 +99,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Open file button listener
-     *
-     * @author rebsc
      */
     private class OpenFileButtonListener implements ActionListener {
         @Override
@@ -143,8 +130,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Select layer button listener
-     *
-     * @author rebsc
      */
     private class SelectLayerButtonListener implements ActionListener {
         private SelectLayerView selector;
@@ -194,8 +179,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Cancel button listener
-     *
-     * @author rebsc
      */
     private class CancelButtonListener implements ActionListener {
         @Override
@@ -207,15 +190,13 @@ public class AutoCalibrateHandler {
 
     /**
      * Run button listener
-     *
-     * @author rebsc
      */
     private class RunButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             // calibrate
             callCalibration();
-            currentPicLayer.clearDrawReferencePoints();
+            currentPicLayer.resetDrawReferencePoints();
             currentPicLayer.invalidate();
             MainApplication.getLayerManager().setActiveLayer(currentPicLayer);
             mainWindow.setVisible(false);
@@ -246,8 +227,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Edge button listener
-     *
-     * @author rebsc
      */
     private class EdgePointsButtonListener implements ActionListener {
         @Override
@@ -282,8 +261,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Origin points list listener
-     *
-     * @author rebsc
      */
     private class OriginSizePropertyListener implements PropertyChangeListener {
         @Override
@@ -303,8 +280,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Reference points list listener
-     *
-     * @author rebsc
      */
     private class RefSizePropertyListener implements PropertyChangeListener {
         @Override
@@ -320,20 +295,18 @@ public class AutoCalibrateHandler {
 
     /**
      * Distance point 1 to point 2 field listener
-     *
-     * @author rebsc
      */
     private class TextField1Listener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
-            currentPicLayer.setDrawFirstLine(true);
+            currentPicLayer.setDrawOrigin1To2Line(true);
             currentPicLayer.invalidate();
             mainWindow.setDistance1Field("");
         }
 
         @Override
         public void focusLost(FocusEvent e) {
-            currentPicLayer.setDrawFirstLine(false);
+            currentPicLayer.setDrawOrigin1To2Line(false);
             currentPicLayer.invalidate();
 
             String value = mainWindow.getDistance1FieldText().replace(",", ".");
@@ -348,20 +321,18 @@ public class AutoCalibrateHandler {
 
     /**
      * Distance point 2 to point 3 field listener
-     *
-     * @author rebsc
      */
     private class TextField2Listener implements FocusListener {
         @Override
         public void focusGained(FocusEvent e) {
-            currentPicLayer.setDrawSecLine(true);
+            currentPicLayer.setDrawOrigin2To3Line(true);
             currentPicLayer.invalidate();
             mainWindow.setDistance2Field("");
         }
 
         @Override
         public void focusLost(FocusEvent e) {
-            currentPicLayer.setDrawSecLine(false);
+            currentPicLayer.setDrawOrigin2To3Line(false);
             currentPicLayer.invalidate();
 
             String value = mainWindow.getDistance2FieldText().replace(",", ".");
@@ -376,8 +347,6 @@ public class AutoCalibrateHandler {
 
     /**
      * Reference add points button listener
-     *
-     * @author rebsc
      */
     private class RefPointsButtonListener implements ActionListener {
         @Override
@@ -389,14 +358,13 @@ public class AutoCalibrateHandler {
                 MainApplication.getMap().mapView.addMouseListener(new RefDefinedPointsMouseListener());
             } else if (selectedValue == 1) {    // manual
                 MainApplication.getMap().mapView.addMouseListener(new RefManualPointsMouseListener());
+                MainApplication.getMap().mapView.addMouseMotionListener(new RefManualPointsMouseMotionListener());
             }
         }
     }
 
     /**
      * Mouse listener for manual reference selection option
-     *
-     * @author rebsc
      */
     private class RefManualPointsMouseListener implements MouseListener {
         @Override
@@ -406,18 +374,23 @@ public class AutoCalibrateHandler {
                 return;
             }
 
-            if (referencePointList.size() < 3) {
-                // add point to reference list in lat/lon scale
-                LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
-                ICoordinateFormat mCoord = CoordinateFormatManager.getDefaultFormat();
-                double latY = Double.parseDouble(mCoord.latToString(latLonPoint));
-                double lonX = Double.parseDouble(mCoord.lonToString(latLonPoint));
-                Point2D llPoint = new Point2D.Double(lonX, latY);
+            LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
+            Point2D llPoint = latLonToPoint2D(latLonPoint);
+            if(referencePointList.isEmpty()){
                 referencePointList.add(llPoint);
-                // draw point
-                currentPicLayer.setDrawReferencePoints(true, translatePointToPicLayerScale(llPoint));
-                currentPicLayer.invalidate();
+                currentPicLayer.setDrawReferencePoints(true, llPoint);
             }
+            else if(referencePointList.size() == 1){
+                Point2D currentValidPoint = currentPicLayer.getRefLine1To2().getEndPoint();
+                referencePointList.add(currentValidPoint);
+                currentPicLayer.setDrawReferencePoints(true, currentValidPoint);
+            }
+            else if(referencePointList.size() == 2){
+                Point2D currentValidPoint = currentPicLayer.getRefLine2To3().getEndPoint();
+                referencePointList.add(currentValidPoint);
+                currentPicLayer.setDrawReferencePoints(true, currentValidPoint);
+            }
+            currentPicLayer.invalidate();
         }
 
         @Override
@@ -442,9 +415,45 @@ public class AutoCalibrateHandler {
     }
 
     /**
+     * Mouse motion listener for manual reference selection option
+     */
+    private class RefManualPointsMouseMotionListener implements MouseMotionListener {
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            // do nothing
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            if (referenceFile == null && referenceLayer == null) {
+                MainApplication.getMap().mapView.removeMouseMotionListener(this);
+                return;
+            }
+            // get mouse position
+            LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
+            if (referencePointList.size() == 1) {
+                // Show line between point 1 and possible points 2
+                GeoLine line = new GeoLine(referencePointList.get(0), latLonToPoint2D(latLonPoint));
+                Point2D trStart = referencePointList.get(0);
+                Point2D trEnd = line.pointOnLine(distance1To2);
+                currentPicLayer.setDrawRef1To2Line(trStart, trEnd);
+            } else if (referencePointList.size() == 2) {
+                // Show line between point 2 and possible points 3
+                GeoLine line = new GeoLine(referencePointList.get(1), latLonToPoint2D(latLonPoint));
+                Point2D trStart = referencePointList.get(1);
+                Point2D trEnd = line.pointOnLine(distance2To3);
+                currentPicLayer.setDrawRef2To3Line(trStart, trEnd);
+                currentPicLayer.unsetDrawRef1ToRef2Line();
+            } else {
+                currentPicLayer.unsetDrawRef1ToRef2Line();
+                currentPicLayer.unsetDrawRef2ToRef3Line();
+            }
+            currentPicLayer.invalidate();
+        }
+    }
+
+    /**
      * Mouse listener for defined reference selection option
-     *
-     * @author rebsc
      */
     private class RefDefinedPointsMouseListener implements MouseListener {
         @Override
@@ -455,7 +464,7 @@ public class AutoCalibrateHandler {
             }
 
             if (referencePointList.size() < 3) {
-                // get pressed point in lat/lon
+                // get point in lat/lon
                 LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
                 double latY = latLonPoint.getY();
                 double lonX = latLonPoint.getX();
@@ -480,7 +489,7 @@ public class AutoCalibrateHandler {
                     // add closest point to reference list
                     referencePointList.add(closestPoint);
                     // draw point
-                    currentPicLayer.setDrawReferencePoints(true, translatePointToPicLayerScale(closestPoint));
+                    currentPicLayer.setDrawReferencePoints(true, closestPoint);
                     currentPicLayer.invalidate();
                 }
             }
@@ -507,9 +516,6 @@ public class AutoCalibrateHandler {
         }
     }
 
-
-    // GETTER / SETTER
-
     public CalibrationWindow getMainWindow() {
         return this.mainWindow;
     }
@@ -517,9 +523,6 @@ public class AutoCalibrateHandler {
     public CalibrationErrorView getErrorView() {
         return new CalibrationErrorView();
     }
-
-
-    // HELPER
 
     public void prepare(PicLayerAbstract layer) {
         this.currentPicLayer = layer;
@@ -542,7 +545,7 @@ public class AutoCalibrateHandler {
         this.referenceFile = null;
         this.referenceLayer = null;
         resetLists();
-        currentPicLayer.clearDrawReferencePoints();
+        currentPicLayer.resetMarkersAndUsabilityValues();
         currentPicLayer.invalidate();
         mainWindow.setVisible(false);
         mainWindow = new CalibrationWindow();
@@ -566,31 +569,6 @@ public class AutoCalibrateHandler {
         referencePointList.removeAllListener();
     }
 
-    /**
-     * Method to translate {@code Point2D} to {@link PicLayerAbstract} scale.
-     *
-     * @param point to translate in LatLon
-     * @return translated point in {@link PicLayerAbstract} scale
-     */
-    private Point2D translatePointToPicLayerScale(Point2D point) {
-        Point2D translatedPoint = null;
-        LatLon ll;                // LatLon object from raw Point2D
-        MapViewPoint en;        // MapViewPoint object from LatLon(ll) scaled in EastNorth(en)
-
-        // put raw Point2D endPos into LatLon and transform LatLon into MapViewPoint (EastNorth)
-        ll = new LatLon(point.getY(), point.getX());
-        en = MainApplication.getMap().mapView.getState().getPointFor(ll);
-
-        // transform EastNorth into current layer scale
-        try {
-            translatedPoint = currentPicLayer.transformPoint(new Point2D.Double(en.getInViewX(), en.getInViewY()));
-        } catch (NoninvertibleTransformException e) {
-            Logging.error(e);
-        }
-
-        return translatedPoint;
-    }
-
     private boolean validValue(String value) {
         try {
             Double.parseDouble(value);
@@ -598,5 +576,12 @@ public class AutoCalibrateHandler {
         } catch (NullPointerException | NumberFormatException ex) {
             return false;
         }
+    }
+
+    private Point2D latLonToPoint2D(LatLon ll) {
+        ICoordinateFormat mCoord = CoordinateFormatManager.getDefaultFormat();
+        double latY = Double.parseDouble(mCoord.latToString(ll));
+        double lonX = Double.parseDouble(mCoord.lonToString(ll));
+        return new Point2D.Double(lonX, latY);
     }
 }

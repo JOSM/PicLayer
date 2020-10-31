@@ -5,7 +5,7 @@ import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import java.awt.geom.Point2D;
 
 /**
- * Class representing GeoLine
+ * Class representing a GeoLine
  *
  * @author rebsc
  */
@@ -33,6 +33,14 @@ public class GeoLine {
         this.distance = getDistance();
     }
 
+    public Point2D getStartPoint() {
+        return new Point2D.Double(lon1, lat1);
+    }
+
+    public Point2D getEndPoint() {
+        return new Point2D.Double(lon2, lat2);
+    }
+
     /**
      * Method to get point on line at given distance from start point on.
      *
@@ -51,10 +59,10 @@ public class GeoLine {
      * @return distance in meter
      */
     public double getDistance() {
-        double phi1 = degToRad(lat1);
-        double phi2 = degToRad(lat2);
-        double deltaPhi = degToRad(lat2 - lat1);
-        double deltaLambda = degToRad(lon2 - lon1);
+        double phi1 = Math.toRadians(lat1);
+        double phi2 = Math.toRadians(lat2);
+        double deltaPhi = Math.toRadians(lat2 - lat1);
+        double deltaLambda = Math.toRadians(lon2 - lon1);
 
         double a = Math.sin(deltaPhi / 2.0) * Math.sin(deltaPhi / 2.0)
                 + Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2.0) * Math.sin(deltaLambda / 2.0);
@@ -62,10 +70,6 @@ public class GeoLine {
         double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
 
         return OsmMercator.EARTH_RADIUS * c;
-    }
-
-    private double degToRad(double x) {
-        return x * Math.PI / 180;
     }
 
 }
