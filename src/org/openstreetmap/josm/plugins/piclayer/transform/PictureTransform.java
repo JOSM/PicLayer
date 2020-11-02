@@ -8,25 +8,18 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.ObservableArrayList;
+import org.openstreetmap.josm.tools.Logging;
 
 public class PictureTransform {
 
     private AffineTransform cachedTransform;
     private EastNorth imagePosition;
 
-    public EastNorth getImagePosition() {
-        return imagePosition;
-    }
-
-    public void setImagePosition(EastNorth imagePosition) {
-        this.imagePosition = imagePosition;
-    }
-
     private boolean modified = false;
 
     private List<Point2D> originPoints;
-    private ObservableArrayList<Point2D> latLonOriginPoints;
-    private ObservableArrayList<Point2D> latLonRefPoints;
+    private ObservableArrayList<Point2D> latLonOriginPoints;    // data for AutoCalibration action
+    private final ObservableArrayList<Point2D> latLonRefPoints; // data for AutoCalibration action
 
     public PictureTransform() {
         cachedTransform = new AffineTransform();
@@ -35,29 +28,12 @@ public class PictureTransform {
         latLonRefPoints = new ObservableArrayList<>(3);
     }
 
-    public AffineTransform getTransform() {
-        return cachedTransform;
-    }
-
     private AffineTransform solveEquation(List<Point2D> desiredPoints) throws NoSolutionException {
         Matrix3D X = new Matrix3D(originPoints);
         Matrix3D Y = new Matrix3D(desiredPoints);
         Matrix3D result = Y.multiply(X.inverse());
 
         return result.toAffineTransform();
-    }
-
-    public void addOriginPoint(Point2D originPoint) {
-        if (originPoints.size() < 3)
-            originPoints.add(originPoint);
-    }
-
-    public void resetCalibration() {
-        originPoints.clear();
-        latLonOriginPoints.clear();
-        latLonRefPoints.clear();
-        modified = false;
-        cachedTransform = new AffineTransform();
     }
 
     /**
@@ -137,20 +113,9 @@ public class PictureTransform {
                 modified = true;
                 desiredPoints.clear();
             } catch (NoSolutionException e) {
-                System.err.println(e.getMessage());
+                Logging.error(e.getMessage());
             }
         }
-    }
-
-    public void replaceOriginPoint(Point2D originPoint, Point2D newOriginPoint) {
-        if (originPoint == null || newOriginPoint == null)
-            return;
-
-        int index = originPoints.indexOf(originPoint);
-        if (index < 0)
-            return;
-
-        originPoints.set(index, newOriginPoint);
     }
 
     public void concatenateTransformPoint(AffineTransform transform, Point2D trans) {
@@ -164,12 +129,28 @@ public class PictureTransform {
             cachedTransform.concatenate(transform);
         }
 
-        for (int i = 0; i < originPoints.size(); i++) {
-            Point2D point = originPoints.get(i);
+        for (Point2D point : originPoints) {
             transform.transform(point, point);
         }
         modified = true;
     }
+
+    public AffineTransform getTransform() {
+        return cachedTransform;
+    }
+
+    public void setTransform(AffineTransform newTransform) {
+        cachedTransform = new AffineTransform(newTransform);
+    }
+
+    public EastNorth getImagePosition() {
+        return imagePosition;
+    }
+
+    public void setImagePosition(EastNorth imagePosition) {
+        this.imagePosition = imagePosition;
+    }
+
 
     public boolean isModified() {
         return modified;
@@ -184,12 +165,24 @@ public class PictureTransform {
         modified = false;
     }
 
-    public void setTransform(AffineTransform newTransform) {
-        cachedTransform = new AffineTransform(newTransform);
-    }
-
     public List<Point2D> getOriginPoints() {
         return originPoints;
+    }
+
+    public void replaceOriginPoint(Point2D originPoint, Point2D newOriginPoint) {
+        if (originPoint == null || newOriginPoint == null)
+            return;
+
+        int index = originPoints.indexOf(originPoint);
+        if (index < 0)
+            return;
+
+        originPoints.set(index, newOriginPoint);
+    }
+
+    public void addOriginPoint(Point2D originPoint) {
+        if (originPoints.size() < 3)
+            originPoints.add(originPoint);
     }
 
     public void setOriginPoints(List<Point2D> list) {
@@ -244,5 +237,13 @@ public class PictureTransform {
 
     public void clearLatLonRefPoints() {
         latLonRefPoints.clear();
+    }
+
+    public void resetCalibration() {
+        originPoints.clear();
+        latLonOriginPoints.clear();
+        latLonRefPoints.clear();
+        modified = false;
+        cachedTransform = new AffineTransform();
     }
 }
