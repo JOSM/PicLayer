@@ -115,7 +115,6 @@ public abstract class PicLayerAbstract extends Layer {
     private boolean drawRef2To3Line = false;
     private GeoLine refLine1To2;
     private GeoLine refLine2To3;
-    private List<Point2D> refPointsBuffer = new ArrayList<>(3);    // only for buffering
 
     /**
      * Constructor
@@ -258,10 +257,8 @@ public abstract class PicLayerAbstract extends Layer {
         drawOriginMarkers = value;
     }
 
-    public void setDrawReferencePoints(boolean value, Point2D pointToDraw) {
+    public void setDrawReferencePoints(boolean value) {
         drawRefMarkers = value;
-        if (this.refPointsBuffer == null) refPointsBuffer = new ArrayList<>(3);
-        if (pointToDraw != null) this.refPointsBuffer.add(pointToDraw);
     }
 
     public void setDrawOrigin1To2Line(boolean value) {
@@ -360,8 +357,8 @@ public abstract class PicLayerAbstract extends Layer {
                 }
             }
             if (drawRefMarkers) {
-                for (int i = 0; i < refPointsBuffer.size(); i++) {
-                    Point2D trPLocal = transformPointToPicLayerScale(refPointsBuffer.get(i));
+                for (int i = 0; i < transformer.getLatLonRefPoints().size(); i++) {
+                    Point2D trPLocal = transformPointToPicLayerScale(transformer.getLatLonRefPoints().get(i));
                     Point2D trP = tr.transform(trPLocal, null);
                     drawMarkerImage(gPoints, pinTiledImageOrange, trP, i);
                 }
@@ -768,7 +765,7 @@ public abstract class PicLayerAbstract extends Layer {
 
     public void resetDrawReferencePoints() {
         drawRefMarkers = false;
-        this.refPointsBuffer = null;
+        transformer.getLatLonRefPoints().clear();
     }
 
     public void resetDrawLines() {

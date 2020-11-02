@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate;
 
 
 import java.awt.event.*;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -22,7 +21,6 @@ import org.openstreetmap.josm.data.coor.conversion.ICoordinateFormat;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.MapViewState.MapViewPoint;
 import org.openstreetmap.josm.gui.help.HelpBrowser;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.MovePointAction;
@@ -34,7 +32,6 @@ import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ReferenceOption
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ResultCheckView;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.SelectLayerView;
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
-import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Class handling connection between {@link AutoCalibratePictureAction} and GUIs.
@@ -376,19 +373,22 @@ public class AutoCalibrateHandler {
 
             LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
             Point2D llPoint = latLonToPoint2D(latLonPoint);
-            if(referencePointList.isEmpty()){
+            if (referencePointList.isEmpty()) {
                 referencePointList.add(llPoint);
-                currentPicLayer.setDrawReferencePoints(true, llPoint);
-            }
-            else if(referencePointList.size() == 1){
+                currentPicLayer.setDrawReferencePoints(true);
+                currentPicLayer.getTransformer().addLatLonRefPoint(e.getPoint());
+
+            } else if (referencePointList.size() == 1) {
                 Point2D currentValidPoint = currentPicLayer.getRefLine1To2().getEndPoint();
                 referencePointList.add(currentValidPoint);
-                currentPicLayer.setDrawReferencePoints(true, currentValidPoint);
-            }
-            else if(referencePointList.size() == 2){
+                currentPicLayer.setDrawReferencePoints(true);
+                currentPicLayer.getTransformer().addLatLonRefPoint(currentValidPoint);
+
+            } else if (referencePointList.size() == 2) {
                 Point2D currentValidPoint = currentPicLayer.getRefLine2To3().getEndPoint();
                 referencePointList.add(currentValidPoint);
-                currentPicLayer.setDrawReferencePoints(true, currentValidPoint);
+                currentPicLayer.setDrawReferencePoints(true);
+                currentPicLayer.getTransformer().addLatLonRefPoint(currentValidPoint);
             }
             currentPicLayer.invalidate();
         }
@@ -489,7 +489,8 @@ public class AutoCalibrateHandler {
                     // add closest point to reference list
                     referencePointList.add(closestPoint);
                     // draw point
-                    currentPicLayer.setDrawReferencePoints(true, closestPoint);
+                    currentPicLayer.setDrawReferencePoints(true);
+                    currentPicLayer.getTransformer().addLatLonRefPoint(closestPoint);
                     currentPicLayer.invalidate();
                 }
             }
@@ -555,6 +556,7 @@ public class AutoCalibrateHandler {
     private void resetLists() {
         currentPicLayer.getTransformer().clearOriginPoints();
         currentPicLayer.getTransformer().clearLatLonOriginPoints();
+        currentPicLayer.getTransformer().clearLatLonRefPoints();
     }
 
     private void addListChangedListenerToPointLists() {

@@ -25,11 +25,14 @@ public class PictureTransform {
     private boolean modified = false;
 
     private List<Point2D> originPoints;
+    private ObservableArrayList<Point2D> latLonOriginPoints;
+    private ObservableArrayList<Point2D> latLonRefPoints;
 
     public PictureTransform() {
         cachedTransform = new AffineTransform();
         originPoints = new ArrayList<>(3);
         latLonOriginPoints = new ObservableArrayList<>(3);
+        latLonRefPoints = new ObservableArrayList<>(3);
     }
 
     public AffineTransform getTransform() {
@@ -51,6 +54,8 @@ public class PictureTransform {
 
     public void resetCalibration() {
         originPoints.clear();
+        latLonOriginPoints.clear();
+        latLonRefPoints.clear();
         modified = false;
         cachedTransform = new AffineTransform();
     }
@@ -159,7 +164,6 @@ public class PictureTransform {
             cachedTransform.concatenate(transform);
         }
 
-
         for (int i = 0; i < originPoints.size(); i++) {
             Point2D point = originPoints.get(i);
             transform.transform(point, point);
@@ -204,9 +208,6 @@ public class PictureTransform {
         originPoints.clear();
     }
 
-    // similar to originPointList - points scaled in LatLon, list observable
-    private ObservableArrayList<Point2D> latLonOriginPoints = new ObservableArrayList<>(3);
-
     public ObservableArrayList<Point2D> getLatLonOriginPoints() {
         return this.latLonOriginPoints;
     }
@@ -231,5 +232,17 @@ public class PictureTransform {
 
     public void clearLatLonOriginPoints() {
         latLonOriginPoints.clear();
+    }
+
+    public ObservableArrayList<Point2D> getLatLonRefPoints() {
+        return latLonRefPoints;
+    }
+
+    public void addLatLonRefPoint(Point2D p) {
+        latLonRefPoints.add(p);
+    }
+
+    public void clearLatLonRefPoints() {
+        latLonRefPoints.clear();
     }
 }
