@@ -11,5 +11,8 @@ Use it wisely - do not copy from copyrighted maps. Use "help" option to get a sh
 ## Authors
 Tomasz Stelmach <br>
 Email: tomasz.stelmach@poczta.onet.pl <br>
-WWW: http://www.stelmach-online.net/
+WWW: http://www.stelmach-online.net/ 
+
+
+Maintainer: Rebecca Schmidt (rebeccasmdt@gmail.com)
 
