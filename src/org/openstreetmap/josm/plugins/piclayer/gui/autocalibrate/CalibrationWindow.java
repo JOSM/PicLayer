@@ -21,6 +21,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.gui.ProgramArguments;
 import org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.AutoCalibratePictureAction;
 import org.openstreetmap.josm.tools.I18n;
@@ -236,7 +238,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setPointHeader() {
-        edgePointHeader.setText(tr("<html><b><u>Building Corner Points</u></b></html>"));
+        edgePointHeader.setText(tr("<html><b>Building Corner Points</b></html>"));
         contentPanel.add(edgePointHeader, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -244,9 +246,9 @@ public class CalibrationWindow extends JFrame {
 
     private void setEdgePointNamesValues() {
         edgePointNames.setText(tr("<html>"
-                + String.format("Point 1 (Lat%sLon):<br>", separator)
-                + String.format("Point 2 (Lat%sLon):<br>", separator)
-                + String.format("Point 3 (Lat%sLon):<br>", separator)
+                + "Point 1:<br>"
+                + "Point 2:<br>"
+                + "Point 3:<br>"
                 + "</html>"));
         contentPanel.add(edgePointNames, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -263,7 +265,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setDistanceHeader() {
-        distanceHeader.setText(tr("<html><b><u>True Distances</u></b></html>"));
+        distanceHeader.setText(tr("<html><b>True Distances</b></html>"));
         contentPanel.add(distanceHeader, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -291,7 +293,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setRefFileHeader() {
-        refFileHeader.setText(tr("<html><b><u>Building Reference File</u></b></html>"));
+        refFileHeader.setText(tr("<html><b>Building Reference File</b></html>"));
         contentPanel.add(refFileHeader, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -344,7 +346,7 @@ public class CalibrationWindow extends JFrame {
     }
 
     private void setRefPointHeader() {
-        refPointHeader.setText("<html><b><u>Building Reference Points</u></b></html>");
+        refPointHeader.setText("<html><b>Building Reference Points</b></html>");
         contentPanel.add(refPointHeader, new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 30), 0, 0));
@@ -352,9 +354,9 @@ public class CalibrationWindow extends JFrame {
 
     private void setRefPointNamesValues() {
         refPointNames.setText(tr("<html>"
-                + String.format("Point 1 (Lat%sLon):<br>", separator)
-                + String.format("Point 2 (Lat%sLon):<br>", separator)
-                + String.format("Point 3 (Lat%sLon):<br>", separator)
+                + "Point 1:<br>"
+                + "Point 2:<br>"
+                + "Point 3:<br>"
                 + "</html>"));
         contentPanel.add(refPointNames, new GridBagConstraints(0, 8, 3, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
