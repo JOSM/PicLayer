@@ -7,6 +7,10 @@
 A JOSM plugin to load and transform pictures on a separate layer. <br>
 Use it wisely - do not copy from copyrighted maps. Use "help" option to get a short tutorial.
 
+<p align="center">
+  <img width="460" src="https://wiki.openstreetmap.org/w/images/7/76/Piclayer_laden8.jpeg">
+</p>
+
 ## Documentation
 → **[How to use the plugin](https://wiki.openstreetmap.org/wiki/JOSM/Plugins/PicLayer#Usage)**
 
