@@ -20,7 +20,7 @@ public class CalibrationErrorView {
     public final static String CALIBRATION_ERROR = tr("Calibration failed!");
     public final static String DIMENSION_ERROR = tr("<html> Calibration failed!<br>"
             + "There must be a mistake -<br>"
-            + "Dimension of object differ too much from original.<br>"
+            + "dimension of object differ too much from original.<br>"
             + "</html>");
     private JLabel textLabel;
 

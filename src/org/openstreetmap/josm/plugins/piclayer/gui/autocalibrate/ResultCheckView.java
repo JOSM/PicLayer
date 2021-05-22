@@ -10,7 +10,7 @@ public class ResultCheckView {
     public static int showAndChoose() {
         Object[] options = {tr("accept"), tr("reset")};
         String title = tr("AutoCalibration - check calibration");
-        String msg = tr("<html>Is this image calibrated the right way?</html>");
+        String msg = tr("<html>Is the image calibrated correctly?</html>");
 
         return JOptionPane.showOptionDialog(null,
                 msg,
