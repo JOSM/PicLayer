@@ -1,12 +1,10 @@
+// License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import javax.swing.*;
 
-/**
- * @author rebsc
- */
 public class ReferenceOptionView {
 
     public static int showAndChoose() {

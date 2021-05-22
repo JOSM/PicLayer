@@ -1,3 +1,4 @@
+// License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.piclayer.io.session;
 
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerFromFile;
