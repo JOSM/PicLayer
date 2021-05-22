@@ -31,8 +31,6 @@ import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Class providing main window for {@link AutoCalibratePictureAction} in {@link PicLayerPlugin}.
- *
- * @author rebsc
  */
 public class CalibrationWindow extends JFrame {
 

@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper;
+package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils;
 
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 
@@ -7,8 +7,6 @@ import java.awt.geom.Point2D;
 
 /**
  * Class representing a GeoLine
- *
- * @author rebsc
  */
 public class GeoLine {
 

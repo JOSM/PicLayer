@@ -9,7 +9,7 @@ import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapViewState.MapViewPoint;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.GeoLine;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationErrorView;
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
 import org.openstreetmap.josm.tools.Logging;
@@ -18,8 +18,6 @@ import org.openstreetmap.josm.tools.Logging;
 /**
  * Class for image calibration.
  * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
- *
- * @author rebsc
  */
 public class AutoCalibration {
 

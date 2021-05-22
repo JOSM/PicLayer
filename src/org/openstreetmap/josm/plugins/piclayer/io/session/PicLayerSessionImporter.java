@@ -34,8 +34,6 @@ import org.w3c.dom.NodeList;
 /**
  * Session importer for PicLayer.
  * Code copied and adjusted from JOSM GeoImageSessionImporter-class!
- *
- * @author rebsc
  */
 public class PicLayerSessionImporter implements SessionLayerImporter {
 

@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper;
+package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -10,7 +10,6 @@ import java.util.Collection;
  * Observable {@link ArrayList}
  *
  * @param <E> object type
- * @author rebsc
  */
 public class ObservableArrayList<E> extends ArrayList<E> {
 

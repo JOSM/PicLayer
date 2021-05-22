@@ -25,8 +25,8 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.help.HelpBrowser;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.MovePointAction;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.GeoLine;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.ObservableArrayList;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.GeoLine;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.ObservableArrayList;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationErrorView;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationWindow;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ReferenceOptionView;
@@ -37,8 +37,6 @@ import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
 /**
  * Class handling connection between {@link AutoCalibratePictureAction} and GUIs.
  * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
- *
- * @author rebsc
  */
 public class AutoCalibrateHandler {
 

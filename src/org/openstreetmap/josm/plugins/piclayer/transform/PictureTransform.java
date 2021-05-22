@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openstreetmap.josm.data.coor.EastNorth;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.ObservableArrayList;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.ObservableArrayList;
 import org.openstreetmap.josm.tools.Logging;
 
 public class PictureTransform {

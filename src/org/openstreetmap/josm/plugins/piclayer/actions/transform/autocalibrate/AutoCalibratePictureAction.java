@@ -15,8 +15,6 @@ import org.openstreetmap.josm.tools.ImageProvider;
 /**
  * Class providing auto calibration action.
  * This class works with {@link AutoCalibrateHandler} class as handler to call calibration action and manage necessary GUIs.
- *
- * @author rebsc
  */
 public class AutoCalibratePictureAction extends GenericPicTransformAction {
 

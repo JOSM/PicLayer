@@ -39,7 +39,7 @@ import org.openstreetmap.josm.plugins.piclayer.actions.LoadPictureCalibrationFro
 import org.openstreetmap.josm.plugins.piclayer.actions.ResetCalibrationAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.SavePictureCalibrationAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.SavePictureCalibrationToWorldAction;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.helper.GeoLine;
+import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.transform.PictureTransform;
 import org.openstreetmap.josm.tools.JosmDecimalFormatSymbolsProvider;
 import org.openstreetmap.josm.tools.Logging;

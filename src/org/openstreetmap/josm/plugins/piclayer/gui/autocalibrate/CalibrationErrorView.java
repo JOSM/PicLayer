@@ -12,8 +12,6 @@ import javax.swing.JOptionPane;
 /**
  * Class providing error views for calibration action.
  * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
- *
- * @author rebsc
  */
 public class CalibrationErrorView {
 

@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
  * Code copied and adjusted from JOSM GeoImageSessionExporter-class!
  *
  * @param <T> Type of PicLayerAbstract
- * @author rebsc
  */
 public abstract class PicLayerAbstractSessionExporter<T extends PicLayerAbstract> extends AbstractSessionExporter<T> {
 
