@@ -27,6 +27,8 @@ dependencies {
 }
 
 archivesBaseName = "PicLayer"
+project.version = "1.0.1"
+
 sourceSets {
   main {
     java {
