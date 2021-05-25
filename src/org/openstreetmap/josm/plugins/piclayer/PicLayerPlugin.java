@@ -37,7 +37,7 @@ import org.openstreetmap.josm.plugins.piclayer.actions.transform.ShearPictureAct
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.MovePointAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.RemovePointAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.TransformPointAction;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.AutoCalibratePictureAction;
+import org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.AutoCalibratePictureAction;
 import org.openstreetmap.josm.plugins.piclayer.io.session.FileSessionExporter;
 import org.openstreetmap.josm.plugins.piclayer.io.session.KMLSessionExporter;
 import org.openstreetmap.josm.plugins.piclayer.io.session.PicLayerSessionImporter;

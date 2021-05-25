@@ -16,16 +16,15 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.ProgramArguments;
 import org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.AutoCalibratePictureAction;
+import org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.AutoCalibratePictureAction;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
@@ -312,9 +311,9 @@ public class CalibrationWindow extends JFrame {
 
     private void setSelectLayerButton() {
         String imageName = "layerlist.png";
-        Image image = null;
+        Image image;
         try {
-            image = ImageIO.read(getClass().getResource("/images/" + imageName));
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/" + imageName)));
         } catch (Exception ex) {
             Logging.error("Could not load image " + imageName + "," + ex);
             return;
@@ -331,7 +330,7 @@ public class CalibrationWindow extends JFrame {
         String imageName = "open.png";
         Image image;
         try {
-            image = ImageIO.read(getClass().getResource("/images/" + imageName));
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/" + imageName)));
         } catch (Exception ex) {
             Logging.error("Could not load image " + imageName + "," + ex);
             return;
@@ -632,7 +631,7 @@ public class CalibrationWindow extends JFrame {
         String imageName = "checked.png";
         Image image;
         try {
-            image = ImageIO.read(getClass().getResource("/images/" + imageName));
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResource("/images/" + imageName)));
         } catch (Exception ex) {
             Logging.error("Could not load image " + imageName + "," + ex);
             return null;

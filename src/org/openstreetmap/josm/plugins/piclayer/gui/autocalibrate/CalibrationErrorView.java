@@ -11,18 +11,16 @@ import javax.swing.JOptionPane;
 
 /**
  * Class providing error views for calibration action.
- * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
  */
 public class CalibrationErrorView {
 
-    public final static String OUTLINE_FILE_ERROR = tr("Could not load outline file!");
     public final static String SELECT_LAYER_ERROR = tr("Could not select layer!");
     public final static String CALIBRATION_ERROR = tr("Calibration failed!");
     public final static String DIMENSION_ERROR = tr("<html> Calibration failed!<br>"
             + "There must be a mistake -<br>"
             + "dimension of object differ too much from original.<br>"
             + "</html>");
-    private JLabel textLabel;
+    private final JLabel textLabel;
 
     public CalibrationErrorView() {
         textLabel = new JLabel();

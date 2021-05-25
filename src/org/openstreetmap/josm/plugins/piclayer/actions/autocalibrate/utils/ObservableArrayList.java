@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils;
+package org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.utils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

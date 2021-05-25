@@ -39,7 +39,7 @@ import org.openstreetmap.josm.plugins.piclayer.actions.LoadPictureCalibrationFro
 import org.openstreetmap.josm.plugins.piclayer.actions.ResetCalibrationAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.SavePictureCalibrationAction;
 import org.openstreetmap.josm.plugins.piclayer.actions.SavePictureCalibrationToWorldAction;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.GeoLine;
+import org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.utils.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.transform.PictureTransform;
 import org.openstreetmap.josm.tools.JosmDecimalFormatSymbolsProvider;
 import org.openstreetmap.josm.tools.Logging;
@@ -241,16 +241,16 @@ public abstract class PicLayerAbstract extends Layer {
         return list;
     }
 
+    public PictureTransform getTransformer() {
+        return transformer;
+    }
+
     public GeoLine getRefLine1To2() {
         return refLine1To2;
     }
 
     public GeoLine getRefLine2To3() {
         return refLine2To3;
-    }
-
-    public PictureTransform getTransformer() {
-        return transformer;
     }
 
     public void setDrawOriginPoints(boolean value) {

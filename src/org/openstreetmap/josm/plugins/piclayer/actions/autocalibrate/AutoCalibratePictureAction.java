@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate;
+package org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 

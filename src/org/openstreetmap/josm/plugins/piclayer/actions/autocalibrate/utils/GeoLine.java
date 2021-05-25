@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils;
+package org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.utils;
 
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 
@@ -21,14 +21,6 @@ public class GeoLine {
         this.lon1 = startPoint.getX();
         this.lat2 = endPoint.getY();
         this.lon2 = endPoint.getX();
-        this.distance = getDistance();
-    }
-
-    public GeoLine(double startLat, double startLon, double endLat, double endLon) {
-        this.lat1 = startLat;
-        this.lon1 = startLon;
-        this.lat2 = endLat;
-        this.lon2 = endLon;
         this.distance = getDistance();
     }
 

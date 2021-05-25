@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate;
+package org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate;
 
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -9,23 +9,22 @@ import java.util.List;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.MapViewState.MapViewPoint;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.GeoLine;
+import org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.utils.GeoLine;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationErrorView;
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
 import org.openstreetmap.josm.tools.Logging;
 
 
 /**
- * Class for image calibration.
- * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
+ * Class for image calibration
  */
 public class AutoCalibration {
 
     private PicLayerAbstract currentLayer;
-    private List<Point2D> startPositions;    // raw data - LatLon scale
-    private List<Point2D> endPositions;        // raw data - LatLon scale
-    private double distance1To2;    // in meter
-    private double distance2To3;    // in meter
+    private List<Point2D> startPositions;    // raw data - LatLon
+    private List<Point2D> endPositions;      // raw data - LatLon
+    private double distance1To2;    // meter
+    private double distance2To3;    // meter
 
 
     public AutoCalibration() {
@@ -41,11 +40,10 @@ public class AutoCalibration {
      * Sets start points to end points and corrects end points by passed distances between points.
      */
     public void calibrate() {
-        // get start / end points
+        // get start/end points
         List<Point2D> startPointList = currentLayer.getTransformer().getOriginPoints();                // in current layer scale
-        List<Point2D> endPointList = correctedPoints(endPositions, distance1To2, distance2To3);        // in lat/lon scale - translation follows
+        List<Point2D> endPointList = correctedPoints(endPositions, distance1To2, distance2To3);        // in lat/lon scale
 
-        // calibrate
         if (currentLayer != null && startPointList != null && endPointList != null
                 && startPointList.size() == 3 && endPointList.size() == 3
                 && distance1To2 != 0.0 && distance2To3 != 0.0) {
@@ -56,25 +54,18 @@ public class AutoCalibration {
 
             // move all points to final state position
             for (Point2D endPos : endPointList) {
-                // get translated start point suitable to end point
                 index = endPointList.indexOf(endPos);
                 tsPoint = startPointList.get(index);
-
-                // transform end point into current layer scale
                 tePoint = translatePointToCurrentScale(endPos);
-
-                // move start point to end point
                 currentLayer.getTransformer().updatePair(tsPoint, tePoint);
             }
 
-            // check if image got too distorted after calibration, if, reset and show error.
-            // Input start positions (lat/lon), corrected end positions (lat/lon)
+            // check if image got distorted after calibration, if true reset and show error.
             if (!checkCalibration(startPositions, endPointList)) {
                 currentLayer.getTransformer().resetCalibration();
                 showErrorView(CalibrationErrorView.DIMENSION_ERROR);
             }
         } else {
-            // calibration failed
             showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
         }
 
@@ -108,7 +99,7 @@ public class AutoCalibration {
 
     /**
      * Corrects points with given distances. Calculates new points on lines
-     * between given points at given distances.
+     * between given points with given distances.
      *
      * @param points     need to be corrected
      * @param distance12 distance between point 1 and point 2 in meter
@@ -119,20 +110,22 @@ public class AutoCalibration {
         if (points != null && points.size() == 3) {
             List<Point2D> correctedList = new ArrayList<>();
 
-            // get line between point1 and point2
+            // get line between point1 and point2, point2 and point3
             GeoLine line12 = new GeoLine(points.get(0), points.get(1));
-            // get line between point2 and point3
             GeoLine line23 = new GeoLine(points.get(1), points.get(2));
 
-            correctedList.add(points.get(0));    // anchor
-            correctedList.add(line12.pointOnLine(distance12));    // point on line12 at distance12 from start on
+            // add point 0 - anchor
+            correctedList.add(points.get(0));
+            // add point on line12 at distance12
+            correctedList.add(line12.pointOnLine(distance12));
             // get lat/lon offset of line12 point to origin point2
             double lonOffset = line12.pointOnLine(distance12).getX() - points.get(1).getX();
             double latOffset = line12.pointOnLine(distance12).getY() - points.get(1).getY();
-            // get point on line23 and add offset - to not deform the image
+            // get point on line23, add offset
             Point2D pointOnLine23 = line23.pointOnLine(distance23);
             Point2D correctedPointOnLine23 = new Point2D.Double(pointOnLine23.getX() + lonOffset, pointOnLine23.getY() + latOffset);
-            correctedList.add(correctedPointOnLine23);    // point on line23 at distance23 from start on corrected with offset from point on line12
+            // add point on line23 at distance23 corrected with offset from point on line12
+            correctedList.add(correctedPointOnLine23);
 
             return correctedList;
         }
@@ -147,8 +140,8 @@ public class AutoCalibration {
      */
     private Point2D translatePointToCurrentScale(Point2D point) {
         Point2D translatedPoint = null;
-        LatLon ll;                // LatLon object from raw Point2D
-        MapViewPoint en;        // MapViewPoint object from LatLon(ll) scaled in EastNorth(en)
+        LatLon ll;               // LatLon object from raw Point2D
+        MapViewPoint en;         // MapViewPoint object from LatLon(ll) scaled in EastNorth(en)
 
         // put raw Point2D endPos into LatLon and transform LatLon into MapViewPoint (EastNorth)
         ll = new LatLon(point.getY(), point.getX());
@@ -174,7 +167,11 @@ public class AutoCalibration {
         handler.getErrorView().show(msg);
     }
 
-
+    /**
+     * Set current active layer
+     *
+     * @param currentLayer to set active
+     */
     public void setCurrentLayer(PicLayerAbstract currentLayer) {
         this.currentLayer = currentLayer;
     }

@@ -1,5 +1,5 @@
 // License: GPL. For details, see LICENSE file.
-package org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate;
+package org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate;
 
 
 import java.awt.event.*;
@@ -24,9 +24,9 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.help.HelpBrowser;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.utils.GeoLine;
+import org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate.utils.ObservableArrayList;
 import org.openstreetmap.josm.plugins.piclayer.actions.transform.affine.MovePointAction;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.GeoLine;
-import org.openstreetmap.josm.plugins.piclayer.actions.transform.autocalibrate.utils.ObservableArrayList;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationErrorView;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.CalibrationWindow;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ReferenceOptionView;
@@ -36,7 +36,6 @@ import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
 
 /**
  * Class handling connection between {@link AutoCalibratePictureAction} and GUIs.
- * Info at https://wiki.openstreetmap.org/wiki/User:Rebsc
  */
 public class AutoCalibrateHandler {
 
@@ -45,10 +44,10 @@ public class AutoCalibrateHandler {
     private File referenceFile;
     private Layer referenceLayer;
     private final AutoCalibration calibration;
-    private ObservableArrayList<Point2D> originPointList;       // points set on picture to calibrate, scaled in LatLon
-    private ObservableArrayList<Point2D> referencePointList;    // points of reference data, scaled in LatLon
-    private double distance1To2;    // in meter
-    private double distance2To3;    // in meter
+    private ObservableArrayList<Point2D> originPointList;       // local points in LatLon
+    private ObservableArrayList<Point2D> referencePointList;    // reference points in LatLon
+    private double distance1To2;    // meter
+    private double distance2To3;    // meter
 
     public AutoCalibrateHandler() {
         this.originPointList = new ObservableArrayList<>(3);
@@ -88,7 +87,6 @@ public class AutoCalibrateHandler {
         @Override
         public void actionPerformed(ActionEvent e) {
             String topic = "Plugin/PicLayer";
-            // open help browser
             HelpBrowser.setUrlForHelpTopic(Optional.of(topic).orElse("/"));
         }
     }
@@ -133,10 +131,8 @@ public class AutoCalibrateHandler {
         @Override
         public void actionPerformed(ActionEvent event) {
             mainWindow.setVisible(false);
-
             selector = new SelectLayerView();
             selector.setVisible(true);
-
             selector.setOkButtonListener(new SelectorOkButtonListener());
             selector.setCancelButtonListener(new SelectorCancelButtonListener());
         }
@@ -229,7 +225,6 @@ public class AutoCalibrateHandler {
         public void actionPerformed(ActionEvent e) {
             mainWindow.setVisible(false);
             MainApplication.getLayerManager().setActiveLayer(currentPicLayer);
-            // switch to select mode
             MovePointAction selectPointMode = new MovePointAction();
             MainApplication.getMap().selectMapMode(selectPointMode);
         }
