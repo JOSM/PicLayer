@@ -1,15 +1,23 @@
 // License: GPL. For details, see LICENSE file.
 package org.openstreetmap.josm.plugins.piclayer.actions.autocalibrate;
 
+import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
 
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -86,8 +94,7 @@ public class AutoCalibrateHandler {
     private static class HelpButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String topic = "Plugin/PicLayer";
-            HelpBrowser.setUrlForHelpTopic(Optional.of(topic).orElse("/"));
+            HelpBrowser.setUrlForHelpTopic(ht("Plugin/PicLayer"));
         }
     }
 
