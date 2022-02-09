@@ -19,9 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import org.openstreetmap.josm.actions.OpenFileAction;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -54,8 +52,8 @@ public class AutoCalibrateHandler {
     private final AutoCalibration calibration;
     private ObservableArrayList<Point2D> originPointList;       // local points in LatLon
     private ObservableArrayList<Point2D> referencePointList;    // reference points in LatLon
-    private double distance1To2;    // meter
-    private double distance2To3;    // meter
+    private double distance1To2;    // in meter
+    private double distance2To3;    // in meter
 
     public AutoCalibrateHandler() {
         this.originPointList = new ObservableArrayList<>(3);
@@ -112,7 +110,7 @@ public class AutoCalibrateHandler {
                 int openValue = fileChooser.showOpenDialog(mainWindow);
                 if (openValue == JFileChooser.APPROVE_OPTION) {
                     referenceFile = fileChooser.getSelectedFile();
-                    addFileInNewLayer(referenceFile);
+                    addFileAsNewLayer(referenceFile);
                 }
             }
             if (referenceFile != null) {
@@ -122,7 +120,7 @@ public class AutoCalibrateHandler {
             mainWindow.setVisible(true);
         }
 
-        private void addFileInNewLayer(File file) {
+        private void addFileAsNewLayer(File file) {
             List<File> files = new ArrayList<>();
             files.add(file);
             OpenFileAction.openFiles(files);
@@ -130,7 +128,7 @@ public class AutoCalibrateHandler {
     }
 
     /**
-     * Select layer button listener
+     * Button listener for Select-Layer view
      */
     private class SelectLayerButtonListener implements ActionListener {
         private SelectLayerView selector;
@@ -212,15 +210,48 @@ public class AutoCalibrateHandler {
          * Method to call calibrating method for given image.
          */
         private void callCalibration() {
-            if (currentPicLayer != null && !originPointList.isEmpty() && !referencePointList.isEmpty()
-                    && distance1To2 != 0.0 && distance2To3 != 0.0) {
-                calibration.setCurrentLayer(currentPicLayer);
-                calibration.setStartPositions(originPointList);
-                calibration.setEndPositions(referencePointList);
-                calibration.setDistance1To2(distance1To2);
-                calibration.setDistance2To3(distance2To3);
-                calibration.calibrate();
-            } else calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            if (currentPicLayer == null) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            if (originPointList == null) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            if (originPointList.isEmpty()) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            if (referencePointList == null) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            if (referencePointList.isEmpty()) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            if (distance1To2 == 0.0) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            if (distance2To3 == 0.0) {
+                calibration.showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+                return;
+            }
+
+            // calibrate
+            calibration.setCurrentLayer(currentPicLayer);
+            calibration.setStartPositions(originPointList);
+            calibration.setEndPositions(referencePointList);
+            calibration.setDistance1To2(distance1To2);
+            calibration.setDistance2To3(distance2To3);
+            calibration.calibrate();
         }
     }
 
@@ -344,7 +375,7 @@ public class AutoCalibrateHandler {
     }
 
     /**
-     * Reference add points button listener
+     * Add reference points button listener
      */
     private class RefPointsButtonListener implements ActionListener {
         @Override
@@ -438,11 +469,19 @@ public class AutoCalibrateHandler {
         @Override
         public void mouseMoved(MouseEvent e) {
             if (referenceFile == null && referenceLayer == null) {
+                // AutoCalibration inactive or something went wrong - remove listener
                 MainApplication.getMap().mapView.removeMouseMotionListener(this);
                 return;
             }
+
             // get mouse position
             LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
+
+            if (referencePointList == null) {
+                JOptionPane.showMessageDialog(null, "An error has occurred while handling the reference points.",
+                        "AutoCalibration Error", JOptionPane.ERROR_MESSAGE);
+            }
+
             if (referencePointList.size() == 1) {
                 // Show line between point 1 and possible points 2
                 GeoLine line = new GeoLine(referencePointList.get(0), latLonToPoint2D(latLonPoint));
@@ -471,8 +510,14 @@ public class AutoCalibrateHandler {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (referenceFile == null && referenceLayer == null) {
+                // AutoCalibration inactive or something went wrong - remove listener
                 MainApplication.getMap().mapView.removeMouseListener(this);
                 return;
+            }
+
+            if (referencePointList == null) {
+                JOptionPane.showMessageDialog(null, "An error has occurred while handling the reference points.",
+                        "AutoCalibration Error", JOptionPane.ERROR_MESSAGE);
             }
 
             if (referencePointList.size() < 3) {
@@ -482,7 +527,7 @@ public class AutoCalibrateHandler {
                 double lonX = latLonPoint.getX();
                 Point2D llPoint = new Point2D.Double(lonX, latY);
 
-                // get current data set and find closest point
+                // get current data set and find the closest point
                 Point2D closestPoint = null;
                 double shortestDistance = 1000000.0;    // default value
                 double tmpDistance;

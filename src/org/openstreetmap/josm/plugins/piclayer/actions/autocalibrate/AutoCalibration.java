@@ -44,31 +44,59 @@ public class AutoCalibration {
         List<Point2D> startPointList = currentLayer.getTransformer().getOriginPoints();                // in current layer scale
         List<Point2D> endPointList = correctedPoints(endPositions, distance1To2, distance2To3);        // in lat/lon scale
 
-        if (currentLayer != null && startPointList != null && endPointList != null
-                && startPointList.size() == 3 && endPointList.size() == 3
-                && distance1To2 != 0.0 && distance2To3 != 0.0) {
-
-            Point2D tsPoint;        // transformed start point
-            Point2D tePoint;        // transformed end point
-            int index;
-
-            // move all points to final state position
-            for (Point2D endPos : endPointList) {
-                index = endPointList.indexOf(endPos);
-                tsPoint = startPointList.get(index);
-                tePoint = translatePointToCurrentScale(endPos);
-                currentLayer.getTransformer().updatePair(tsPoint, tePoint);
-            }
-
-            // check if image got distorted after calibration, if true reset and show error.
-            if (!checkCalibration(startPositions, endPointList)) {
-                currentLayer.getTransformer().resetCalibration();
-                showErrorView(CalibrationErrorView.DIMENSION_ERROR);
-            }
-        } else {
+        if (currentLayer == null) {
             showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
         }
 
+        if (startPointList == null) {
+            showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
+        }
+
+        if (endPointList == null) {
+            showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
+        }
+
+        if (startPointList.size() != 3) {
+            showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
+        }
+
+        if (endPointList.size() != 3) {
+            showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
+        }
+
+        if (distance1To2 == 0.0) {
+            showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
+        }
+
+        if (distance2To3 == 0.0) {
+            showErrorView(CalibrationErrorView.CALIBRATION_ERROR);
+            return;
+        }
+
+        // calibrate
+        Point2D tsPoint;        // transformed start point
+        Point2D tePoint;        // transformed end point
+        int index;
+
+        // move all points to final state position
+        for (Point2D endPos : endPointList) {
+            index = endPointList.indexOf(endPos);
+            tsPoint = startPointList.get(index);
+            tePoint = translatePointToCurrentScale(endPos);
+            currentLayer.getTransformer().updatePair(tsPoint, tePoint);
+        }
+
+        // check if image got distorted after calibration, if true reset and show error.
+        if (!checkCalibration(startPositions, endPointList)) {
+            currentLayer.getTransformer().resetCalibration();
+            showErrorView(CalibrationErrorView.DIMENSION_ERROR);
+        }
     }
 
     /**

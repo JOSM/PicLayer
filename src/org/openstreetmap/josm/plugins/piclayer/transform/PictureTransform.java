@@ -201,6 +201,9 @@ public class PictureTransform {
         originPoints.clear();
     }
 
+
+    // Data lists for AutoCalibration action
+
     public ObservableArrayList<Point2D> getLatLonOriginPoints() {
         return this.latLonOriginPoints;
     }
@@ -213,14 +216,6 @@ public class PictureTransform {
         int index = originPoints.indexOf(selectedPoint);
         Point2D toDelete = this.latLonOriginPoints.get(index);
         this.latLonOriginPoints.remove(toDelete);
-    }
-
-    public void setLatLonOriginPoint(List<Point2D> list) {
-        if (latLonOriginPoints == null) latLonOriginPoints = new ObservableArrayList<>(list);
-        else {
-            latLonOriginPoints.clear();
-            latLonOriginPoints.addAll(list);
-        }
     }
 
     public void clearLatLonOriginPoints() {
