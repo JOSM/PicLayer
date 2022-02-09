@@ -368,18 +368,29 @@ public class AutoCalibrateHandler {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (referenceFile == null && referenceLayer == null) {
+                // AutoCalibration inactive or something went wrong - remove listener
                 MainApplication.getMap().mapView.removeMouseListener(this);
                 return;
             }
 
             LatLon latLonPoint = MainApplication.getMap().mapView.getLatLon(e.getPoint().getX(), e.getPoint().getY());
             Point2D llPoint = latLonToPoint2D(latLonPoint);
+
+            if (referencePointList == null) {
+                JOptionPane.showMessageDialog(null, "An error has occurred while handling the reference points.",
+                        "AutoCalibration Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            assert referencePointList != null;
             if (referencePointList.isEmpty()) {
                 referencePointList.add(llPoint);
                 currentPicLayer.setDrawReferencePoints(true);
-                currentPicLayer.getTransformer().addLatLonRefPoint(e.getPoint());
-
+                currentPicLayer.getTransformer().addLatLonRefPoint(llPoint);
             } else if (referencePointList.size() == 1) {
+                // Workaround: To avoid running into not reproducible NPE
+                if (currentPicLayer.getRefLine1To2() == null) {
+                    return;
+                }
                 Point2D currentValidPoint = currentPicLayer.getRefLine1To2().getEndPoint();
                 referencePointList.add(currentValidPoint);
                 currentPicLayer.setDrawReferencePoints(true);
