@@ -335,35 +335,39 @@ public abstract class PicLayerAbstract extends Layer {
                 );
             }
 
-            // Graphics setup for marker
+            // AutoCalibration - Graphics setup for marker
             Graphics2D gPoints = (Graphics2D) g2.create();
             gPoints.translate(pic_offset_x, pic_offset_y);
             gPoints.setColor(Color.RED); // red color for points output
             AffineTransform tr = AffineTransform.getScaleInstance(scalex, scaley);
             tr.concatenate(transformer.getTransform());
 
-            // Draw markers and lines
+            // AutoCalibration - Draw markers and lines
             if (drawOriginMarkers) {
-                for (int i = 0; i < transformer.getOriginPoints().size(); i++) {
+                // draw origin markers
+                List<Point2D> points = transformer.getOriginPoints();
+
+                for (int i = 0; i < points.size(); i++) {
                     Point2D trP = tr.transform(transformer.getOriginPoints().get(i), null);
                     drawMarkerImage(gPoints, pinTiledImage, trP, i);
                 }
-                List<Point2D> points = this.getTransformer().getOriginPoints();
-                if (drawOrigin1To2Line) {
+
+                if (drawOrigin1To2Line && points.size() > 2) {
                     drawLine(g, points.get(0), points.get(1));
                 }
-                if (drawOrigin2To3Line) {
+                if (drawOrigin2To3Line && points.size() > 3) {
                     drawLine(g, points.get(1), points.get(2));
                 }
             }
             if (drawRefMarkers) {
+                // draw reference markers
                 for (int i = 0; i < transformer.getLatLonRefPoints().size(); i++) {
                     Point2D trPLocal = transformPointToPicLayerScale(transformer.getLatLonRefPoints().get(i));
                     Point2D trP = tr.transform(trPLocal, null);
                     drawMarkerImage(gPoints, pinTiledImageOrange, trP, i);
                 }
-                if (drawRef1To2Line) {
-                    if (refLine1To2 == null) return;
+                if (drawRef1To2Line && refLine1To2 != null) {
+                    // draw line between reference point1 and point2
                     Point2D trP1Local = transformPointToPicLayerScale(refLine1To2.getStartPoint());
                     Point2D p1 = tr.transform(trP1Local, null);
                     Point2D trP2Local = transformPointToPicLayerScale(refLine1To2.getEndPoint());
@@ -371,8 +375,8 @@ public abstract class PicLayerAbstract extends Layer {
                     drawLine(gPoints, p1, p2);
                     drawMarkerImage(gPoints, pinTiledImageOrange, p2, 1);
                 }
-                if (drawRef2To3Line) {
-                    if (refLine2To3 == null) return;
+                if (drawRef2To3Line && refLine2To3 != null) {
+                    // draw line between reference point2 and point3
                     Point2D trP1Local = transformPointToPicLayerScale(refLine2To3.getStartPoint());
                     Point2D p1 = tr.transform(trP1Local, null);
                     Point2D trP2Local = transformPointToPicLayerScale(refLine2To3.getEndPoint());
@@ -395,6 +399,15 @@ public abstract class PicLayerAbstract extends Layer {
      * @param markerNumber   on image
      */
     private void drawMarkerImage(Graphics2D g, Image image, Point2D markerPosition, int markerNumber) {
+        if (g == null) {
+            return;
+        }
+        if (image == null) {
+            return;
+        }
+        if (markerPosition == null) {
+            return;
+        }
         int x = (int) markerPosition.getX();
         int y = (int) markerPosition.getY();
         int dstx = x - pinAnchorX;
@@ -411,7 +424,15 @@ public abstract class PicLayerAbstract extends Layer {
      * @param p2 end point
      */
     private void drawLine(Graphics2D g, Point2D p1, Point2D p2) {
-        if (g == null || p1 == null || p2 == null) return;
+        if (g == null) {
+            return;
+        }
+        if (p1 == null) {
+            return;
+        }
+        if (p2 == null) {
+            return;
+        }
         g.setColor(Color.green);
         g.setStroke(new BasicStroke(5));
         g.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
@@ -760,7 +781,7 @@ public abstract class PicLayerAbstract extends Layer {
         } catch (NoninvertibleTransformException e) {
             Logging.error(e);
         }
-        return selected;
+        return null;
     }
 
     public void resetDrawReferencePoints() {
@@ -768,7 +789,7 @@ public abstract class PicLayerAbstract extends Layer {
         transformer.getLatLonRefPoints().clear();
     }
 
-    public void resetDrawLines() {
+    private void resetDrawLines() {
         drawOrigin1To2Line = false;
         drawOrigin2To3Line = false;
         drawRef1To2Line = false;

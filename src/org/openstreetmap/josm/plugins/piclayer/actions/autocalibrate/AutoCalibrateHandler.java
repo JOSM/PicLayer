@@ -18,6 +18,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
@@ -39,11 +40,14 @@ import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ReferenceOption
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ResultCheckView;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.SelectLayerView;
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
+import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Class handling connection between {@link AutoCalibratePictureAction} and GUIs.
  */
 public class AutoCalibrateHandler {
+
+    private static final Logger logger = Logger.getLogger(AutoCalibratePictureAction.class.getName());
 
     private PicLayerAbstract currentPicLayer;
     private CalibrationWindow mainWindow;
@@ -66,6 +70,7 @@ public class AutoCalibrateHandler {
         this.mainWindow = new CalibrationWindow();
         addListenerToMainView();
         this.calibration = new AutoCalibration();
+        logger.info(this.getClass().getName() + " has been created");
     }
 
     /**
@@ -608,6 +613,7 @@ public class AutoCalibrateHandler {
         mainWindow.setVisible(false);
         mainWindow = new CalibrationWindow();
         addListenerToMainView();
+        logger.info(this.getClass().getName() + " reset");
     }
 
     private void resetLists() {
