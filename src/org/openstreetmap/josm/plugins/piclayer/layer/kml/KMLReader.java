@@ -13,11 +13,15 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 public class KMLReader {
 
     private List<KMLGroundOverlay> groundOverlays;
 
-    private File file;
+    private final File file;
 
     public KMLReader(File file) {
         this.file = file;
@@ -26,10 +30,13 @@ public class KMLReader {
     public void process() {
         KMLHandler handler = new KMLHandler();
         try {
-            XMLReader xr = XMLReaderFactory.createXMLReader();
+            SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+            parserFactory.setNamespaceAware(true);
+            SAXParser parser = parserFactory.newSAXParser();
+            XMLReader xr = parser.getXMLReader();
             xr.setContentHandler(handler);
             xr.parse(new InputSource(Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)));
-        } catch (SAXException | IOException e) {
+        } catch (SAXException | IOException | ParserConfigurationException e) {
             Logging.error(e);
         }
         groundOverlays = handler.getResult();
