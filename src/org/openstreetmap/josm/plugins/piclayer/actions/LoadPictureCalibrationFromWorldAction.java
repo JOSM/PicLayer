@@ -18,7 +18,7 @@ import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
  */
 public class LoadPictureCalibrationFromWorldAction extends JosmAction {
 
-    private PicLayerAbstract layer;
+    private final PicLayerAbstract layer;
 
     public LoadPictureCalibrationFromWorldAction(PicLayerAbstract layer) {
         super(tr("Import World File Calibration..."), null, tr("Loads calibration data from a world file"), null, false);

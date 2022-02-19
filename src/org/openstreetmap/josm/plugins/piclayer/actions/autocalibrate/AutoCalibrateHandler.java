@@ -40,7 +40,6 @@ import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ReferenceOption
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.ResultCheckView;
 import org.openstreetmap.josm.plugins.piclayer.gui.autocalibrate.SelectLayerView;
 import org.openstreetmap.josm.plugins.piclayer.layer.PicLayerAbstract;
-import org.openstreetmap.josm.tools.Logging;
 
 /**
  * Class handling connection between {@link AutoCalibratePictureAction} and GUIs.

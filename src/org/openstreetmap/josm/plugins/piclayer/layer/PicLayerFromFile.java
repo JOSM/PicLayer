@@ -26,7 +26,7 @@ import org.openstreetmap.josm.tools.Logging;
 public class PicLayerFromFile extends PicLayerAbstract {
 
     // File to load from.
-    private File m_file;
+    private final File m_file;
 
     // whether the file is a zip archive
     private boolean isZip;
@@ -34,7 +34,7 @@ public class PicLayerFromFile extends PicLayerAbstract {
     private String imgNameInZip;
 
     // Tooltip text
-    private String m_tooltiptext;
+    private final String m_tooltiptext;
 
     public PicLayerFromFile(File file) {
         // Remember the file

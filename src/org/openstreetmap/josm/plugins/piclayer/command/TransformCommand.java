@@ -17,10 +17,10 @@ import org.openstreetmap.josm.tools.ImageProvider;
 
 public class TransformCommand extends Command {
 
-    private PicLayerAbstract layer;
-    private PictureTransform beforeTransform;
+    private final PicLayerAbstract layer;
+    private final PictureTransform beforeTransform;
     private PictureTransform afterTransform;
-    private String actionName;
+    private final String actionName;
 
     public TransformCommand(PicLayerAbstract layer, String actionName) {
         super(new DataSet()); // not really a command...

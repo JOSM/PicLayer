@@ -28,7 +28,7 @@ public abstract class GenericPicTransformAction extends MapMode implements Mouse
     protected EastNorth prevEastNorth = null;
     protected Point2D prevMousePoint = null;
     protected TransformCommand currentCommand = null;
-    private String actionName;
+    private final String actionName;
 
     public GenericPicTransformAction(String name, String actionName, String iconName,
                                      String tooltip, Shortcut shortcut, MapFrame mapFrame, Cursor cursor) {

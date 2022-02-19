@@ -14,9 +14,9 @@ import org.openstreetmap.josm.plugins.piclayer.layer.kml.KMLGroundOverlay;
 
 public class PicLayerFromKML extends PicLayerAbstract {
 
-    private KMLGroundOverlay calibration;
-    private File picture;
-    private String pictureName;
+    private final KMLGroundOverlay calibration;
+    private final File picture;
+    private final String pictureName;
 
     public PicLayerFromKML(File main, KMLGroundOverlay calibration) {
 
@@ -33,12 +33,11 @@ public class PicLayerFromKML extends PicLayerAbstract {
 
     @Override
     protected Image createImage() throws IOException {
-        Image image = ImageIO.read(picture);
-        return image;
+        return ImageIO.read(picture);
     }
 
     @Override
-    protected void lookForCalibration() throws IOException {
+    protected void lookForCalibration() {
         if (calibration != null)
             loadCalibration(calibration);
 

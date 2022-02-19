@@ -15,7 +15,7 @@ import org.openstreetmap.josm.plugins.piclayer.transform.PictureTransform;
  */
 public class ResetCalibrationAction extends JosmAction {
 
-    private PicLayerAbstract layer;
+    private final PicLayerAbstract layer;
 
     public ResetCalibrationAction(PicLayerAbstract layer, PictureTransform transformer) {
         super(tr("Reset Calibration"), null, tr("Reset calibration"), null, false);

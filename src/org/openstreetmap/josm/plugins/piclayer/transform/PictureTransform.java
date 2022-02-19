@@ -18,7 +18,7 @@ public class PictureTransform {
     private boolean modified = false;
 
     private List<Point2D> originPoints;
-    private ObservableArrayList<Point2D> latLonOriginPoints;    // data for AutoCalibration action
+    private final ObservableArrayList<Point2D> latLonOriginPoints;    // data for AutoCalibration action
     private final ObservableArrayList<Point2D> latLonRefPoints; // data for AutoCalibration action
 
     public PictureTransform() {
