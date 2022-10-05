@@ -19,6 +19,9 @@ import org.openstreetmap.josm.tools.Logging;
  */
 public class MovePointAction extends GenericPicTransformAction {
 
+    /**
+     * Create a new move point action
+     */
     public MovePointAction() {
         super(tr("PicLayer Move point"), tr("Point added/moved"), "movepoint", tr("Drag or create point on the picture"),
                 ImageProvider.getCursor("crosshair", null));
@@ -53,7 +56,9 @@ public class MovePointAction extends GenericPicTransformAction {
                 double lonX = latLonPoint.getX();
                 currentLayer.getTransformer().addLatLonOriginPoint(new Point2D.Double(lonX, latY));
             }
-            currentCommand.addIfChanged();
+            if (currentCommand != null) {
+                currentCommand.addIfChanged();
+            }
         } catch (NoninvertibleTransformException e1) {
             Logging.error(e1);
         }

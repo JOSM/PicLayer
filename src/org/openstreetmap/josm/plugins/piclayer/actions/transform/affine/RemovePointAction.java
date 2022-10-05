@@ -13,6 +13,9 @@ import org.openstreetmap.josm.tools.ImageProvider;
  */
 public class RemovePointAction extends GenericPicTransformAction {
 
+    /**
+     * Create a new action to remove points
+     */
     public RemovePointAction() {
         super(tr("PicLayer Remove point"), tr("Point removed"), "removepoint", tr("Remove point on the picture"),
                 ImageProvider.getCursor("crosshair", null));
@@ -28,12 +31,14 @@ public class RemovePointAction extends GenericPicTransformAction {
             currentLayer.getTransformer().removeOriginPoint(selectedPoint);
             selectedPoint = null;
         }
-
-        currentCommand.addIfChanged();
+        if (currentCommand != null) {
+            currentCommand.addIfChanged();
+        }
     }
 
     @Override
     protected void doAction(MouseEvent e) {
+        // Do nothing -- only remove points on deliberate clicks
     }
 
     @Override

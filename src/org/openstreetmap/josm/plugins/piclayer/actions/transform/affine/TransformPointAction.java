@@ -16,6 +16,9 @@ import org.openstreetmap.josm.tools.Logging;
  */
 public class TransformPointAction extends GenericPicTransformAction {
 
+    /**
+     * Create a new action for creating transform points
+     */
     public TransformPointAction() {
         super(tr("PicLayer Transform point"), tr("Point transformed"), "transformpoint", tr("Transform point on the picture"),
                 ImageProvider.getCursor("crosshair", null));
@@ -34,8 +37,9 @@ public class TransformPointAction extends GenericPicTransformAction {
                 currentLayer.getTransformer().updatePair(selectedPoint, pressed);
                 //}
             }
-
-            currentCommand.addIfChanged();
+            if (currentCommand != null) {
+                currentCommand.addIfChanged();
+            }
         } catch (NoninvertibleTransformException e1) {
             Logging.error(e1);
         }
