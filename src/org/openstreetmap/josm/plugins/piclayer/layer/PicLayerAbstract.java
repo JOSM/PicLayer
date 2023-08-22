@@ -25,6 +25,7 @@ import javax.swing.ImageIcon;
 import org.openstreetmap.josm.actions.RenameLayerAction;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.EastNorth;
+import org.openstreetmap.josm.data.coor.ILatLon;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.data.projection.Projection;
@@ -70,10 +71,10 @@ public abstract class PicLayerAbstract extends Layer {
     private static final String MATRIXm12 = "M12";
 
     // Counter - just for naming of layers
-    private static int imageCounter = 0;
+    private static int imageCounter;
 
     // This is the main image to be displayed
-    protected Image image = null;
+    protected Image image;
 
     // Tiles of pin images
     private static Image pinTiledImage;
@@ -93,7 +94,7 @@ public abstract class PicLayerAbstract extends Layer {
     protected PictureTransform transformer;
 
     // Layer icon / lines
-    private Icon layerIcon = null;
+    private final Icon layerIcon;
 
     protected final Projection projection;
 
@@ -108,18 +109,26 @@ public abstract class PicLayerAbstract extends Layer {
 
     // markers and usability values
     private boolean drawOriginMarkers = true;
-    private boolean drawRefMarkers = false;
-    private boolean drawOrigin1To2Line = false;
-    private boolean drawOrigin2To3Line = false;
-    private boolean drawRef1To2Line = false;
-    private boolean drawRef2To3Line = false;
+    private boolean drawRefMarkers;
+    private boolean drawOrigin1To2Line;
+    private boolean drawOrigin2To3Line;
+    private boolean drawRef1To2Line;
+    private boolean drawRef2To3Line;
     private GeoLine refLine1To2;
     private GeoLine refLine2To3;
+
+    private static synchronized void setStaticImages(Class<? extends PicLayerAbstract> clazz) {
+        if (pinTiledImage == null) {
+            // allow system to load the image and use it in future
+            pinTiledImage = new ImageIcon(Toolkit.getDefaultToolkit().createImage(clazz.getResource("/images/v6_64.png"))).getImage();
+            pinTiledImageOrange = new ImageIcon(Toolkit.getDefaultToolkit().createImage(clazz.getResource("/images/v6_64o.png"))).getImage();
+        }
+    }
 
     /**
      * Constructor
      */
-    public PicLayerAbstract() {
+    protected PicLayerAbstract() {
         super("PicLayer #" + imageCounter);
 
         //Increase number
@@ -128,11 +137,7 @@ public abstract class PicLayerAbstract extends Layer {
         // Load layer icon
         layerIcon = new ImageIcon(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/images/layericon.png")));
 
-        if (pinTiledImage == null) {
-            // allow system to load the image and use it in future
-            pinTiledImage = new ImageIcon(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/images/v6_64.png"))).getImage();
-            pinTiledImageOrange = new ImageIcon(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/images/v6_64o.png"))).getImage();
-        }
+        setStaticImages(this.getClass());
 
         projection = ProjectionRegistry.getProjection();
     }
@@ -295,20 +300,20 @@ public abstract class PicLayerAbstract extends Layer {
             EastNorth leftop = mv.getEastNorth(0, 0);
             // Number of pixels for one unit in east north space.
             // This is the same in x- and y- direction.
-            double pixel_per_en = (mv.getWidth() / 2.0) / (center.east() - leftop.east());
+            double pixelPerEn = (mv.getWidth() / 2.0) / (center.east() - leftop.east());
 
             // This is now the offset in screen pixels
             EastNorth imagePosition = transformer.getImagePosition();
-            double pic_offset_x = ((imagePosition.east() - leftop.east()) * pixel_per_en);
-            double pic_offset_y = ((leftop.north() - imagePosition.north()) * pixel_per_en);
+            double picOffsetX = ((imagePosition.east() - leftop.east()) * pixelPerEn);
+            double picOffsetY = ((leftop.north() - imagePosition.north()) * pixelPerEn);
 
             Graphics2D g = (Graphics2D) g2.create();
             // Move
-            g.translate(pic_offset_x, pic_offset_y);
+            g.translate(picOffsetX, picOffsetY);
 
             // Scale
-            double scalex = initialImageScale * pixel_per_en / getMetersPerEasting(imagePosition) / 100;
-            double scaley = initialImageScale * pixel_per_en / getMetersPerNorthing(imagePosition) / 100;
+            double scalex = initialImageScale * pixelPerEn / getMetersPerEasting(imagePosition) / 100;
+            double scaley = initialImageScale * pixelPerEn / getMetersPerNorthing(imagePosition) / 100;
             g.scale(scalex, scaley);
 
             g.transform(transformer.getTransform());
@@ -337,7 +342,7 @@ public abstract class PicLayerAbstract extends Layer {
 
             // AutoCalibration - Graphics setup for marker
             Graphics2D gPoints = (Graphics2D) g2.create();
-            gPoints.translate(pic_offset_x, pic_offset_y);
+            gPoints.translate(picOffsetX, picOffsetY);
             gPoints.setColor(Color.RED); // red color for points output
             AffineTransform tr = AffineTransform.getScaleInstance(scalex, scaley);
             tr.concatenate(transformer.getTransform());
@@ -398,7 +403,7 @@ public abstract class PicLayerAbstract extends Layer {
      * @param markerPosition ,centered and transformed (by current {@link AffineTransform})
      * @param markerNumber   on image
      */
-    private void drawMarkerImage(Graphics2D g, Image image, Point2D markerPosition, int markerNumber) {
+    private static void drawMarkerImage(Graphics2D g, Image image, Point2D markerPosition, int markerNumber) {
         if (g == null) {
             return;
         }
@@ -413,7 +418,8 @@ public abstract class PicLayerAbstract extends Layer {
         int dstx = x - pinAnchorX;
         int dsty = y - pinAnchorY;
         g.drawImage(image, dstx, dsty, dstx + pinWidth, dsty + pinHeight,
-                pinTileOffsetX[markerNumber], pinTileOffsetY[markerNumber], pinTileOffsetX[markerNumber] + pinWidth, pinTileOffsetY[markerNumber] + pinHeight, null);
+                pinTileOffsetX[markerNumber], pinTileOffsetY[markerNumber], pinTileOffsetX[markerNumber] + pinWidth,
+                pinTileOffsetY[markerNumber] + pinHeight, null);
     }
 
     /**
@@ -423,7 +429,7 @@ public abstract class PicLayerAbstract extends Layer {
      * @param p1 start point
      * @param p2 end point
      */
-    private void drawLine(Graphics2D g, Point2D p1, Point2D p2) {
+    private static void drawLine(Graphics2D g, Point2D p1, Point2D p2) {
         if (g == null) {
             return;
         }
@@ -458,9 +464,9 @@ public abstract class PicLayerAbstract extends Layer {
         double naturalScale = projection.getDefaultZoomInPPD();
         naturalScale *= 0.01; // make a little smaller
 
-        LatLon ll1 = projection.eastNorth2latlon(
+        ILatLon ll1 = projection.eastNorth2latlon(
                 new EastNorth(en.east() - naturalScale, en.north()));
-        LatLon ll2 = projection.eastNorth2latlon(
+        ILatLon ll2 = projection.eastNorth2latlon(
                 new EastNorth(en.east() + naturalScale, en.north()));
 
         return ll1.greatCircleDistance(ll2) / naturalScale / 2;
@@ -471,20 +477,20 @@ public abstract class PicLayerAbstract extends Layer {
         double naturalScale = projection.getDefaultZoomInPPD();
         naturalScale *= 0.01;
 
-        LatLon ll1 = projection.eastNorth2latlon(
+        ILatLon ll1 = projection.eastNorth2latlon(
                 new EastNorth(en.east(), en.north() - naturalScale));
-        LatLon ll2 = projection.eastNorth2latlon(
+        ILatLon ll2 = projection.eastNorth2latlon(
                 new EastNorth(en.east(), en.north() + naturalScale));
 
         return ll1.greatCircleDistance(ll2) / naturalScale / 2;
     }
 
-    @Override
     /**
      * Computes the (rough) bounding box.
      * We ignore the rotation, the resulting bounding box contains any possible
      * rotation.
      */
+    @Override
     public void visitBoundingBox(BoundingXYVisitor arg0) {
         if (image == null)
             return;
@@ -496,21 +502,21 @@ public abstract class PicLayerAbstract extends Layer {
         // in meters, depending on the projection used at creation), but the
         // initial scale is in m/100pix
         // So for now, we support the bounding box only when everything is in meters
-        if (projcode.equals("EPSG:4326"))
+        if ("EPSG:4326".equals(projcode))
             return;
 
         EastNorth center = transformer.getImagePosition();
         double w = image.getWidth(null);
         double h = image.getHeight(null);
-        double diag_pix = Math.sqrt(w * w + h * h);
+        double diagPix = Math.sqrt(w * w + h * h);
 
         // initialImageScale is a the scale (unit: m/100pix) at creation time
-        double diag_m = (diag_pix / 100) * initialImageScale;
+        double diagM = (diagPix / 100) * initialImageScale;
 
         AffineTransform trans = transformer.getTransform();
         double factor = Math.max(trans.getScaleX(), trans.getScaleY());
 
-        double offset = factor * diag_m / 2.0;
+        double offset = factor * diagM / 2.0;
 
         EastNorth topleft = center.add(-offset, -offset);
         EastNorth bottomright = center.add(offset, offset);
@@ -563,10 +569,10 @@ public abstract class PicLayerAbstract extends Layer {
 
         AffineTransform transform;
 
-        double pos_x = Double.parseDouble(props.getProperty(POSITION_X, "0"));
-        double pos_y = Double.parseDouble(props.getProperty(POSITION_Y, "0"));
+        double posX = Double.parseDouble(props.getProperty(POSITION_X, "0"));
+        double posY = Double.parseDouble(props.getProperty(POSITION_Y, "0"));
 
-        EastNorth imagePosition = new EastNorth(pos_x, pos_y);
+        EastNorth imagePosition = new EastNorth(posX, posY);
         transformer.setImagePosition(imagePosition);
 
         initialImageScale = Double.parseDouble(props.getProperty(INITIAL_SCALE, "1")); //in_scale
@@ -574,15 +580,15 @@ public abstract class PicLayerAbstract extends Layer {
             //double in_pos_x = Double.valueOf(props.getProperty(INITIAL_POS_X, "0"));
             //double in_pos_y = Double.valueOf(props.getProperty(INITIAL_POS_Y, "0"));
             double angle = Double.parseDouble(props.getProperty(ANGLE, "0"));
-            double scale_x = Double.valueOf(props.getProperty(SCALEX, "1"));
-            double scale_y = Double.valueOf(props.getProperty(SCALEY, "1"));
-            double shear_x = Double.valueOf(props.getProperty(SHEARX, "0"));
-            double shear_y = Double.valueOf(props.getProperty(SHEARY, "0"));
+            double scaleX = Double.parseDouble(props.getProperty(SCALEX, "1"));
+            double scaleY = Double.parseDouble(props.getProperty(SCALEY, "1"));
+            double shearX = Double.parseDouble(props.getProperty(SHEARX, "0"));
+            double shearY = Double.parseDouble(props.getProperty(SHEARY, "0"));
 
             // transform to matrix from these values - need testing
             transform = AffineTransform.getRotateInstance(angle / 180 * Math.PI);
-            transform.scale(scale_x, scale_y);
-            transform.shear(shear_x, shear_y);
+            transform.scale(scaleX, scaleY);
+            transform.shear(shearX, shearY);
         } else {
             // initialize matrix
             double[] matrix = new double[6];
@@ -674,17 +680,17 @@ public abstract class PicLayerAbstract extends Layer {
         EastNorth leftop = MainApplication.getMap().mapView.getEastNorth(0, 0);
         // Number of pixels for one unit in east north space.
         // This is the same in x- and y- direction.
-        double pixel_per_en = (MainApplication.getMap().mapView.getWidth() / 2.0) / (center.east() - leftop.east());
+        double pixelPerEn = (MainApplication.getMap().mapView.getWidth() / 2.0) / (center.east() - leftop.east());
 
         EastNorth imageCenter = transformer.getImagePosition();
         //     This is now the offset in screen pixels
-        double pic_offset_x = ((imageCenter.east() - leftop.east()) * pixel_per_en);
-        double pic_offset_y = ((leftop.north() - imageCenter.north()) * pixel_per_en); // something bad...
+        double picOffsetX = ((imageCenter.east() - leftop.east()) * pixelPerEn);
+        double picOffsetY = ((leftop.north() - imageCenter.north()) * pixelPerEn); // something bad...
 
-        AffineTransform pointTrans = AffineTransform.getTranslateInstance(pic_offset_x, pic_offset_y);
+        AffineTransform pointTrans = AffineTransform.getTranslateInstance(picOffsetX, picOffsetY);
 
-        double scalex = initialImageScale * pixel_per_en / getMetersPerEasting(imageCenter) / 100;
-        double scaley = initialImageScale * pixel_per_en / getMetersPerNorthing(imageCenter) / 100;
+        double scalex = initialImageScale * pixelPerEn / getMetersPerEasting(imageCenter) / 100;
+        double scaley = initialImageScale * pixelPerEn / getMetersPerNorthing(imageCenter) / 100;
 
         pointTrans.scale(scalex, scaley); // ok here
 
