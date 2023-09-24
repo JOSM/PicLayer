@@ -5,7 +5,7 @@ plugins {
 
 sourceCompatibility = 1.8
 
-project.version = "1.0.2"
+project.version = "1.0.3"
 josm.pluginName = "PicLayer"
 
 sourceSets {
