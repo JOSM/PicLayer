@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,7 +23,6 @@ import org.openstreetmap.josm.gui.layer.Layer;
 
 public class SelectLayerView {
 
-    private final String[] labels;
     private final JList<Object> list;
     private final JFrame frame;
     private JScrollPane scrollPane;
@@ -32,9 +32,7 @@ public class SelectLayerView {
 
 
     public SelectLayerView() {
-        labels = new String[10];
-        getLayerNames();
-        list = new JList<>(labels);
+        list = new JList<>(getLayerNames());
 
         frame = new JFrame("Layer Selector");
         frame.setSize(400, 200);
@@ -51,11 +49,9 @@ public class SelectLayerView {
         contentPane.add(buttonBar, BorderLayout.SOUTH);
     }
 
-    private void getLayerNames() {
-        java.util.List<Layer> layer = MainApplication.getLayerManager().getLayers();
-        for (int i = 0; i < layer.size(); i++) {
-            labels[i] = layer.get(i).getName();
-        }
+    private static String[] getLayerNames() {
+        return MainApplication.getLayerManager().getLayers().stream()
+                .map(Layer::getName).toArray(String[]::new);
     }
 
     public void setVisible(boolean value) {
