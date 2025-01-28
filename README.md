@@ -22,5 +22,4 @@ If you want to use the plugin or work with the source code, have a look at [INST
 
 ## Authors
 Tomasz Stelmach <br>
-Email: tomasz.stelmach@poczta.onet.pl <br>
-WWW: http://www.stelmach-online.net/ 
+Email: tomasz.stelmach@poczta.onet.pl
