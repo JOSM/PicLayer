@@ -1,44 +1,43 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.openstreetmap.josm.plugins</groupId>
-        <artifactId>plugin-root</artifactId>
-        <version>SNAPSHOT</version>
-    </parent>
-    <artifactId>PicLayer</artifactId>
-
-    <url>${plugin.link}</url>
-    <developers>
-        <developer>
-            <name>Tomasz Stelmach</name>
-        </developer>
-    </developers>
-    <properties>
-        <plugin.src.dir>src</plugin.src.dir>
-        <plugin.main.version>18494</plugin.main.version>
-        <plugin.author>Tomasz Stelmach</plugin.author>
-        <plugin.class>org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin</plugin.class>
-        <plugin.description>This plugin allows to display any picture as a background in the editor and align it with the map.</plugin.description>
-        <plugin.icon>images/layericon.png</plugin.icon>
-        <plugin.link>https://josm.openstreetmap.de/wiki/Help/Plugin/PicLayer</plugin.link>
-        <plugin.canloadatruntime>true</plugin.canloadatruntime>
-    </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Plugin-Link>${plugin.link}</Plugin-Link>
-                            <Plugin-Icon>${plugin.icon}</Plugin-Icon>
-                            <Plugin-Canloadatruntime>${plugin.canloadatruntime}</Plugin-Canloadatruntime>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.openstreetmap.josm.plugins</groupId>
+    <artifactId>plugin-root</artifactId>
+    <version>SNAPSHOT</version>
+  </parent>
+  <artifactId>PicLayer</artifactId>
+  <url>${plugin.link}</url>
+  <developers>
+    <developer>
+      <name>Tomasz Stelmach</name>
+    </developer>
+  </developers>
+  <properties>
+    <plugin.src.dir>src</plugin.src.dir>
+    <plugin.main.version>19044</plugin.main.version>
+    <plugin.author>Tomasz Stelmach</plugin.author>
+    <plugin.class>org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin</plugin.class>
+    <plugin.description>This plugin allows to display any picture as a background in the editor and align it with the map.</plugin.description>
+    <plugin.icon>images/layericon.png</plugin.icon>
+    <plugin.link>https://josm.openstreetmap.de/wiki/Help/Plugin/PicLayer</plugin.link>
+    <plugin.canloadatruntime>true</plugin.canloadatruntime>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Plugin-Link>${plugin.link}</Plugin-Link>
+              <Plugin-Icon>${plugin.icon}</Plugin-Icon>
+              <Plugin-Canloadatruntime>${plugin.canloadatruntime}</Plugin-Canloadatruntime>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

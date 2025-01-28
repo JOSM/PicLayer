@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="PicLayer" default="dist" basedir=".">
-
-	<!-- edit the properties of this plugin in the file `gradle.properties` -->
-	<property file="${basedir}/gradle.properties"/>
-
-	<property name="josm" location="../../core/dist/josm-custom.jar"/>
-	<property name="plugin.dist.dir" value="../../dist"/>
-
-	<!-- ** include targets that all plugins have in common ** -->
-   	<import file="../build-common.xml"/>
-
+  <property name="plugin.main.version" value="19044"/>
+  <property name="plugin.author" value="Tomasz Stelmach"/>
+  <property name="plugin.class" value="org.openstreetmap.josm.plugins.piclayer.PicLayerPlugin"/>
+  <property name="plugin.description" value="This plugin allows to display any picture as a background in the editor and align it with the map."/>
+  <property name="plugin.icon" value="images/layericon.png"/>
+  <property name="plugin.link" value="https://josm.openstreetmap.de/wiki/Help/Plugin/PicLayer"/>
+  <property name="plugin.canloadatruntime" value="true"/>
+  <!-- ** include targets that all plugins have in common ** -->
+  <import file="../build-common.xml"/>
 </project>
